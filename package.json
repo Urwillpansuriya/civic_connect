@@ -1,0 +1,10 @@
+{
+  "dependencies": {
+    "json2csv": "^6.0.0-alpha.2",
+    "leaflet": "^1.9.4",
+    "leaflet.heat": "^0.2.0",
+    "node-fetch": "^3.3.2",
+    "react-leaflet": "^5.0.0",
+    "react-leaflet-heatmap-layer-v3": "^3.0.3-beta-1"
+  }
+}
