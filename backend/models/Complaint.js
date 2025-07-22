@@ -114,6 +114,9 @@ const complaintSchema = new mongoose.Schema({
   category: { type: String, required: true },
   comments: [commentSchema],
   location: { type: String },
+  placeName: String,     // ✅ Add this
+  areaName: String,      // ✅ Add this
+  cityName: String,     // ✅ Add this
   coordinates: {
     lat: { type: Number },
     lng: { type: Number }

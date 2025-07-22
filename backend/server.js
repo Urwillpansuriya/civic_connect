@@ -4,14 +4,16 @@ const dotenv = require('dotenv');
 const cors = require('cors');
 const path = require('path');
 const commentRoutes = require('./routes/comments');
+const categoryRoutes = require('./routes/categoryRoutes');
 // Load env
 dotenv.config();
 
 // Init app
 const app = express();
+app.use('/api/categories', categoryRoutes); // ✅ Category route works here
 app.use(cors({
   origin: 'http://localhost:3000', // allow frontend
-  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
   credentials: true,
   allowedHeaders: ['Content-Type', 'Authorization']
 }));

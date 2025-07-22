@@ -583,9 +583,15 @@ function Dashboard() {
       {userComplaints.map(c => (
         <div key={c._id} style={cardStyle}>
           <h4>{c.title}</h4>
-          <p>{c.description}</p>
-          <p><strong>Location:</strong> {c.location}</p>
-          <p><strong>Status:</strong> {c.status}</p>
+          <p><strong>Description:</strong> {c.description}</p>
+          <p><strong>Category:</strong> {c.category}</p>
+          <p><strong>Place:</strong> {c.placeName}</p>
+          <p><strong>Area:</strong> {c.areaName}</p>
+          <p><strong>City:</strong> {c.cityName}</p>
+          <p><strong>Location:</strong>{c.location}</p>
+          <p><strong>Coordinates:</strong> {c.lat}, {c.lng}</p>
+          <p><strong>Status:</strong> <span className={`status-badge ${c.status}`}>{c.status}</span></p>
+          <p><strong>Date:</strong> {new Date(c.createdAt).toLocaleDateString()}</p>
           {c.imageUrl && (
             <img src={`http://localhost:5000/uploads/${c.imageUrl}`} alt="complaint" style={imageStyle} />
           )}
@@ -620,6 +626,9 @@ function Dashboard() {
             <h4>{c.title}</h4>
             <p>{c.description}</p>
             <p><strong>User:</strong> {c.user?.name || 'Unknown'}</p>
+            <p><strong>Place:</strong> {c.placeName}</p>
+            <p><strong>Area:</strong> {c.areaName}</p>
+            <p><strong>City:</strong> {c.cityName}</p>
             <p><strong>Location:</strong> {c.location}</p>
             <p><strong>Status:</strong> {c.status}</p>
             {c.imageUrl && (

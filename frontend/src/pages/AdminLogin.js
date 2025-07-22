@@ -55,6 +55,11 @@ import { useNavigate } from 'react-router-dom';
 function AdminLogin() {
   const [form, setForm] = useState({ email: '', password: '' });
   const navigate = useNavigate();
+    const [modal, setModal] = useState({
+      show: false,
+      title: '',
+      message: ''
+    });
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -65,15 +70,25 @@ function AdminLogin() {
     try {
       const res = await axios.post('http://localhost:5000/api/auth/login', form);
       if (res.data.user.role !== 'admin') {
-        alert('Access denied. Not an admin.');
+        setModal({
+          show: true,
+          title: 'Access Denied',
+          message: 'You do not have permission to access this page.'
+        });
         return;
       }
       localStorage.setItem('token', res.data.token);
       localStorage.setItem('user', JSON.stringify(res.data.user));
       navigate('/admin');
     } catch (err) {
-      alert('Invalid credentials');
+      // alert('Invalid credentials');
+        setModal({
+  show: true,
+  title: 'Failed',
+  message: 'Login failed ' + (err.response?.data?.error || 'Login failed')
+});
     }
+    
   };
 
   // 🌟 Updated Internal CSS
@@ -145,6 +160,41 @@ function AdminLogin() {
           Login
         </button>
       </form>
+      {modal.show && (
+  <div style={{
+    position: 'fixed',
+    top: 0, left: 0, right: 0, bottom: 0,
+    backgroundColor: 'rgba(0,0,0,0.4)',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    zIndex: 999
+  }}>
+    <div style={{
+      backgroundColor: '#fff',
+      padding: '20px',
+      borderRadius: '8px',
+      width: '300px',
+      boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
+      textAlign: 'center'
+    }}>
+      <h3>{modal.title}</h3>
+      <p>{modal.message}</p>
+      <button onClick={() => setModal({ ...modal, show: false })} style={{
+        marginTop: '10px',
+        padding: '8px 16px',
+        border: 'none',
+        borderRadius: '5px',
+        background: '#007bff',
+        color: '#fff',
+        cursor: 'pointer'
+      }}>
+        OK
+      </button>
+    </div>
+  </div>
+)}
+
     </div>
   );
 }

@@ -3,7 +3,9 @@ const Complaint = require('../models/Complaint');
 // ✅ Submit Complaint
 exports.submitComplaint = async (req, res) => {
   try {
-    const { title, description, category, lat, lng } = req.body;
+    const { title, description, location, category, lat, lng,placeName,
+      areaName,cityName } = req.body;
+      console.log('Received data:', req.body); // Log the received data
     const imageUrl = req.file ? req.file.filename : null;
 
     let locationName = '';
@@ -30,6 +32,9 @@ exports.submitComplaint = async (req, res) => {
       category,
       imageUrl,
       location: locationName,
+     placeName,  // ✅
+     areaName,   // ✅
+     cityName,    // ✅
       coordinates: {
         lat: parseFloat(lat),
         lng: parseFloat(lng)

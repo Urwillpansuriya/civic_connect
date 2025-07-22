@@ -6,6 +6,11 @@ import { getToken, isAuthenticated } from '../utils/auth';
 function ComplaintList() {
   const [complaints, setComplaints] = useState([]);
   const navigate = useNavigate();
+  const [modal, setModal] = useState({
+    show: false,
+    title: '',
+    message: ''
+  });
 
   useEffect(() => {
     if (!isAuthenticated()) {
@@ -25,7 +30,11 @@ function ComplaintList() {
       });
       setComplaints(res.data);
     } catch (err) {
-      alert('Failed to fetch complaints');
+      setModal({
+        show: true,
+        title: 'Error',
+        message: 'Failed to fetch complaints'
+      });
     }
   };
 
@@ -36,7 +45,11 @@ function ComplaintList() {
       });
       fetchData(); // Refresh complaints after upvote
     } catch (err) {
-      alert('Error upvoting');
+      setModal({
+        show: true,
+        title: 'Error',
+        message: 'Error upvoting'
+      });
     }
   };
   
@@ -68,6 +81,40 @@ function ComplaintList() {
           </button>
         </div>
       ))}
+      {modal.show && (
+        <div style={{
+          position: 'fixed',
+          top: 0, left: 0, right: 0, bottom: 0,
+          backgroundColor: 'rgba(0,0,0,0.4)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          zIndex: 999
+        }}>
+          <div style={{
+            backgroundColor: '#fff',
+            padding: '20px',
+            borderRadius: '8px',
+            width: '300px',
+            boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
+            textAlign: 'center'
+          }}>
+            <h3>{modal.title}</h3>
+            <p>{modal.message}</p>
+            <button onClick={() => setModal({ ...modal, show: false })} style={{
+              marginTop: '10px',
+              padding: '8px 16px',
+              border: 'none',
+              borderRadius: '5px',
+              background: '#007bff',
+              color: '#fff',
+              cursor: 'pointer'
+            }}>
+              OK
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

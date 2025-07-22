@@ -8,7 +8,9 @@ const {
 } = require('../controllers/complaintController');
 const { postComment, getComments } = require('../controllers/commentController');
 const authMiddleware = require('../middleware/authMiddleware');
+const upload = require('../middleware/upload'); // multer middleware
 
+router.post('/add', auth, upload.single('image'), addComplaint);
 // Update status: PATCH /api/complaints/:id/status
 router.patch('/:id/status', authMiddleware, updateComplaintStatus);
 // @route GET /api/complaints/search?query=abc

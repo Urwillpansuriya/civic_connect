@@ -1,42 +1,3 @@
-// import React, { useEffect, useState } from 'react';
-// import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
-// import axios from 'axios';
-// import 'leaflet/dist/leaflet.css';
-
-// function ComplaintMap() {
-//   const [complaints, setComplaints] = useState([]);
-
-//   useEffect(() => {
-//     axios.get('http://localhost:5000/api/complaints/all', {
-//       headers: {
-//         Authorization: `Bearer ${localStorage.getItem('token')}`
-//       }
-//     }).then(res => setComplaints(res.data));
-//   }, []);
-
-//   return (
-//     <div style={{ height: '500px' }}>
-//       <MapContainer center={[21.17, 72.83]} zoom={12} style={{ height: '100%' }}>
-//         <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-//         {complaints.map(c => (
-//           c.coordinates?.lat && c.coordinates?.lng && (
-//             <Marker key={c._id} position={[c.coordinates.lat, c.coordinates.lng]}>
-//               <Popup>
-//                 <strong>{c.title}</strong><br />
-//                 {c.category}<br />
-//                 {c.location}
-//               </Popup>
-//             </Marker>
-//           )
-//         ))}
-//       </MapContainer>
-//     </div>
-//   );
-// }
-
-// export default ComplaintMap;
-
-
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
@@ -53,6 +14,11 @@ L.Icon.Default.mergeOptions({
 
 function ComplaintMap() {
   const [complaints, setComplaints] = useState([]);
+  const [modal, setModal] = useState({
+    show: false,
+    title: '',
+    message: ''
+  });
 
   useEffect(() => {
     const fetchComplaints = async () => {
@@ -65,7 +31,11 @@ function ComplaintMap() {
         setComplaints(res.data);
       } catch (err) {
         console.error('Error fetching complaints:', err);
-        alert('Failed to load complaint data');
+        setModal({
+          show: true,
+          title: 'Error',
+          message: 'Failed to load complaint data'
+        });
       }
     };
 
@@ -137,6 +107,30 @@ function ComplaintMap() {
           })}
         </MapContainer>
       </div>
+
+      {modal.show && (
+        <div style={{
+          position: 'fixed',
+          top: 0, left: 0, right: 0, bottom: 0,
+          backgroundColor: 'rgba(0,0,0,0.4)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          zIndex: 999
+        }}>
+          <div style={{
+            backgroundColor: 'white',
+            padding: '20px',
+            borderRadius: '8px',
+            boxShadow: '0 4px 8px rgba(0,0,0,0.2)',
+            textAlign: 'center'
+          }}>
+            <h3 style={{ marginBottom: '10px' }}>{modal.title}</h3>
+            <p>{modal.message}</p>
+            <button onClick={() => setModal({ ...modal, show: false })} style={{ marginTop: '10px', padding: '8px 15px', backgroundColor: '#007bff', color: 'white', border: 'none', borderRadius: '5px', cursor: 'pointer' }}>OK</button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

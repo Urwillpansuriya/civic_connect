@@ -38,8 +38,33 @@ router.get('/mine', authMiddleware, async (req, res) => {
   }
 });
 
-// ✅ Get All Complaints (Admin/Public)
-router.get('/all', authMiddleware, getAllComplaints);
+// GET /api/complaints/all?page=1&limit=10
+router.get('/all', authMiddleware, async (req, res) => {
+  try {
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const skip = (page - 1) * limit;
+
+    const [complaints, total] = await Promise.all([
+      Complaint.find()
+        .populate('user', 'name')
+        .populate('createdBy', 'name')
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(limit),
+      Complaint.countDocuments()
+    ]);
+
+    res.json({
+      complaints,
+      total,
+      page,
+      totalPages: Math.ceil(total / limit)
+    });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to fetch complaints' });
+  }
+});
 
 
 // ✅ Public route to get all complaints (no auth middleware)
@@ -50,6 +75,24 @@ router.get('/', async (req, res) => {
   } catch (err) {
     console.error('Error fetching complaints:', err);
     res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// ✅ Get single complaint by ID
+router.get('/:id', authMiddleware, async (req, res) => {
+  try {
+    const complaint = await Complaint.findById(req.params.id)
+      .populate('user', 'name')
+      .populate('createdBy', 'name');
+
+    if (!complaint) {
+      return res.status(404).json({ error: 'Complaint not found' });
+    }
+
+    res.json(complaint);
+  } catch (err) {
+    console.error(`Error fetching complaint ${req.params.id}:`, err);
+    res.status(500).json({ error: 'Server error' });
   }
 });
 
@@ -118,6 +161,35 @@ router.post('/like/:id', verifyToken, async (req, res) => {
 
 // ✅ Admin Status Update
 router.patch('/status/:id', authMiddleware, updateComplaintStatus);
+
+// GET /api/complaints/summary
+router.get('/summary', authMiddleware, async (req, res) => {
+  try {
+    // Count by status
+    const statuses = ['pending', 'in-progress', 'resolved', 'rejected'];
+    const statusCounts = {};
+    for (const status of statuses) {
+      statusCounts[status] = await Complaint.countDocuments({ status });
+    }
+
+    // Count today's complaints
+    const startOfDay = new Date();
+    startOfDay.setHours(0, 0, 0, 0);
+    const endOfDay = new Date();
+    endOfDay.setHours(23, 59, 59, 999);
+
+    const todayCount = await Complaint.countDocuments({
+      createdAt: { $gte: startOfDay, $lte: endOfDay }
+    });
+
+    res.json({
+      statusCounts,
+      todayCount
+    });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to fetch summary' });
+  }
+});
 
 // server/routes/complaints.js
 

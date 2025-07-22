@@ -12,6 +12,8 @@ import AdminLogin from './pages/AdminLogin';
 import PublicMap from './pages/PublicMap'; // ✅ add import for this
 import ComplaintDetail from './pages/ComplaintDetail';
 import PublicDashboard from './pages/PublicDashboard';
+import AddCategory from './pages/AddCategory';
+import ComplaintStatusPage from './pages/ComplaintStatusPage';
 
 function App() {
   return (
@@ -29,7 +31,9 @@ function App() {
         <Route path="/complaints/:id" element={<ComplaintDetail />} />
         <Route path="/map-view" element={<ComplaintMap />} /> {/* ✅ unique path */}
         <Route path="/public-dashboard" element={<PublicDashboard />} />
-        
+        <Route path="/admin/add-category" element={<AddCategory />} />
+        <Route path="/admin/complaints/:id" element={<ComplaintStatusPage />} />
+
       </Routes>
     </Router>
   );

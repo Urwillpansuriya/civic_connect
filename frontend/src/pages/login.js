@@ -118,8 +118,14 @@ function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const navigate = useNavigate();
+  const [modal, setModal] = useState({
+    show: false,
+    title: '',
+    message: ''
+  });
 
   const handleLogin = async (e) => {
+    
     e.preventDefault();
     try {
       const res = await axios.post('http://localhost:5000/api/auth/login', { email, password });
@@ -134,7 +140,13 @@ function Login() {
       }
 
     } catch (err) {
-      alert(err.response?.data?.error || 'Login failed');
+      // alert(err.response?.data?.error || 'Login failed');
+  setModal({
+  show: true,
+  title: 'Failed',
+  message: (err.response?.data?.error || 'Login failed')
+});
+
     }
   };
 
@@ -225,7 +237,43 @@ function Login() {
 
       <p style={infoTextStyle}>Are you an admin?</p>
       <button onClick={() => navigate('/admin-login')} style={secondaryButtonStyle}>Admin Login</button>
+    {modal.show && (
+  <div style={{
+    position: 'fixed',
+    top: 0, left: 0, right: 0, bottom: 0,
+    backgroundColor: 'rgba(0,0,0,0.4)',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    zIndex: 999
+  }}>
+    <div style={{
+      backgroundColor: '#fff',
+      padding: '20px',
+      borderRadius: '8px',
+      width: '300px',
+      boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
+      textAlign: 'center'
+    }}>
+      <h3>{modal.title}</h3>
+      <p>{modal.message}</p>
+      <button onClick={() => setModal({ ...modal, show: false })} style={{
+        marginTop: '10px',
+        padding: '8px 16px',
+        border: 'none',
+        borderRadius: '5px',
+        background: '#007bff',
+        color: '#fff',
+        cursor: 'pointer'
+      }}>
+        OK
+      </button>
     </div>
+  </div>
+)}
+
+    </div>
+    
   );
 }
 
