@@ -23,7 +23,6 @@ app.use(express.json());
 // Register routes
 app.use('/api/complaints', complaintRoutes);
 app.use('/api/complaints', complaintRouter); // Register the main complaint router that has the like route
-app.use('/api/complaints', complaintRoute); // Register the main complaint router that has the like route
 app.use('/api/categories', categoryRoutes); // Category route works here
 app.use('/api/comments', commentRoutes); // Comment route works here
 // Middleware

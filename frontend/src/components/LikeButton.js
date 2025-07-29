@@ -17,7 +17,7 @@ function LikeButton({ complaintId, initialLikes = 0 }) {
       setClicked(!clicked);
     } catch (err) {
       console.error('Like error:', err);
-      alert('Login required to like a complaint.');
+        alert('Login required to like a complaint.');
     }
   };
 
