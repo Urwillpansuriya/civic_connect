@@ -28,7 +28,7 @@ function ComplaintMap() {
             Authorization: `Bearer ${localStorage.getItem('token')}`
           }
         });
-        setComplaints(res.data);
+        setComplaints(Array.isArray(res.data) ? res.data : res.data.complaints || []);
       } catch (err) {
         console.error('Error fetching complaints:', err);
         setModal({

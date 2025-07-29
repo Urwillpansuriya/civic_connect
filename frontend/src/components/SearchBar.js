@@ -70,7 +70,9 @@ function SearchBar({ onResults }) {
             Authorization: `Bearer ${getToken()}`
           }
         });
-        onResults(res.data);
+        // Handle response data format
+        const complaintsData = res.data.complaints || res.data;
+        onResults(Array.isArray(complaintsData) ? complaintsData : []);
         return;
       }
 
@@ -79,7 +81,9 @@ function SearchBar({ onResults }) {
           Authorization: `Bearer ${getToken()}`
         }
       });
-      onResults(res.data);
+      // Handle response data format
+      const complaintsData = res.data.complaints || res.data;
+      onResults(Array.isArray(complaintsData) ? complaintsData : []);
     } catch (err) {
       console.error('🔍 Search error:', err);
       onResults([]);

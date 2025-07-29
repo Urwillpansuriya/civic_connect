@@ -14,6 +14,7 @@ import ComplaintDetail from './pages/ComplaintDetail';
 import PublicDashboard from './pages/PublicDashboard';
 import AddCategory from './pages/AddCategory';
 import ComplaintStatusPage from './pages/ComplaintStatusPage';
+import ComplaintSearch from './pages/ComplaintSearch';
 
 function App() {
   return (
@@ -33,7 +34,7 @@ function App() {
         <Route path="/public-dashboard" element={<PublicDashboard />} />
         <Route path="/admin/add-category" element={<AddCategory />} />
         <Route path="/admin/complaints/:id" element={<ComplaintStatusPage />} />
-
+        <Route path="/search" element={<ComplaintSearch />} />
       </Routes>
     </Router>
   );
