@@ -3,26 +3,38 @@ const mongoose = require('mongoose');
 const dotenv = require('dotenv');
 const cors = require('cors');
 const path = require('path');
-const commentRoutes = require('./routes/comments');
-const categoryRoutes = require('./routes/categoryRoutes');
-const complaintRoutes = require('./routes/complaintRoutes'); // Import complaint routes
-const complaintRouter = require('./routes/complaint'); // Import main complaint router
-const app = express();   // Init app
-// Load env
+
+// Load env first so all process.env values are available
 dotenv.config();
 
-app.use('/api/categories', categoryRoutes); // ✅ Category route works here
+const commentRoutes = require('./routes/comments');
+const categoryRoutes = require('./routes/categoryRoutes');
+const complaintRouter = require('./routes/complaint'); // Main complaint router
+
+const app = express();
+
+// ─── Global Middleware (must come before all routes) ────────────────────────
+
+// Allow requests from any configured frontend origin.
+// Set CORS_ORIGIN on Render to your Vercel URL (comma-separated for multiple).
+// Example: CORS_ORIGIN=https://your-app.vercel.app,https://your-custom-domain.com
+// When not set it falls back to allowing all origins so the API stays accessible
+// during initial setup. Set this variable in production for better security.
+const rawOrigin = process.env.CORS_ORIGIN || '';
+const allowedOrigins = rawOrigin
+  ? rawOrigin.split(',').map(o => o.trim()).filter(Boolean)
+  : null; // null = allow all origins
+
 app.use(cors({
-  origin: 'http://localhost:3000', // allow frontend
+  origin: allowedOrigins || '*',
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
-  credentials: true,
+  credentials: !!allowedOrigins,
   allowedHeaders: ['Content-Type', 'Authorization']
 }));
+
 app.use(express.json());
-app.use('/api/comments', commentRoutes); // ✅ Comment route works here
-// Middleware
-// app.use(cors());
-// MongoDB Connection
+
+// ─── MongoDB Connection ──────────────────────────────────────────────────────
 mongoose.connect(process.env.MONGO_URI, {
   useNewUrlParser: true,
   useUnifiedTopology: true
@@ -30,20 +42,17 @@ mongoose.connect(process.env.MONGO_URI, {
 .then(() => console.log('✅ MongoDB Connected'))
 .catch(err => console.error('❌ MongoDB Connection Error:', err));
 
-// Routes
+// ─── Routes ─────────────────────────────────────────────────────────────────
 app.use('/api/auth', require('./routes/auth'));
-// Complaint routes already registered above
-app.use('/api/export', require('./routes/export')); // ✅ CSV route works here
+app.use('/api/complaints', complaintRouter);
+app.use('/api/categories', categoryRoutes);
+app.use('/api/comments', commentRoutes);
+app.use('/api/export', require('./routes/export'));
+
 // Serve uploaded images
 app.use('/uploads', express.static('uploads'));
 
-// Serve React build
-// app.use(express.static(path.join(__dirname, '../frontend/build')));
-// app.get('*', (req, res) => {
-//   res.sendFile(path.join(__dirname, '../frontend/build', 'index.html'));
-// });
-
-// Start Server
+// ─── Start Server ────────────────────────────────────────────────────────────
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`🚀 Server running at http://localhost:${PORT}`);

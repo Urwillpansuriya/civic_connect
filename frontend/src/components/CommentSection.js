@@ -1,32 +1,34 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import { getToken } from '../utils/auth';
+
+const API_URL = "https://civic-connect-hams.onrender.com";
 
 const CommentSection = ({ complaintId }) => {
   const [comments, setComments] = useState([]);
   const [input, setInput] = useState('');
   const [error, setError] = useState('');
 
-  useEffect(() => {
-    fetchComments();
-  }, [complaintId]);
-
-  const fetchComments = async () => {
+  const fetchComments = useCallback(async () => {
     try {
-      const res = await axios.get(`http://localhost:5000/api/comments/${complaintId}`);
+      const res = await axios.get(`${API_URL}/api/comments/${complaintId}`);
       setComments(Array.isArray(res.data) ? res.data : []);
     } catch (err) {
       console.error('❌ Failed to load comments:', err);
       setComments([]);
     }
-  };
+  }, [complaintId]);
+
+  useEffect(() => {
+    fetchComments();
+  }, [fetchComments]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!input.trim()) return;
 
     try {
-      await axios.post(`http://localhost:5000/api/comments/${complaintId}`, {
+      await axios.post(`${API_URL}/api/comments/${complaintId}`, {
         text: input
       }, {
         headers: {

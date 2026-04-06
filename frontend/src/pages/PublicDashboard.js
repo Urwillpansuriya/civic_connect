@@ -197,7 +197,7 @@
 
 
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
@@ -208,11 +208,8 @@ function PublicDashboard() {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const API_URL = "https://civic-connect-hams.onrender.com";
-  useEffect(() => {
-    fetchComplaints();
-  }, [currentPage]);
 
-  const fetchComplaints = async () => {
+  const fetchComplaints = useCallback(async () => {
     try {
       setLoading(true);
       const res = await axios.get(`${API_URL}/api/complaints?page=${currentPage}&limit=10`);
@@ -229,7 +226,11 @@ function PublicDashboard() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [currentPage]);
+
+  useEffect(() => {
+    fetchComplaints();
+  }, [fetchComplaints]);
 
   const handlePageChange = (page) => {
     if (page >= 1 && page <= totalPages) {
