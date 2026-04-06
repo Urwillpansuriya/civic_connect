@@ -240,10 +240,19 @@ function ComplaintForm() {
           <div style={s.card}>
             <h3 style={s.cardTitle}>📷 Upload Image</h3>
             <div
+              role="button"
+              tabIndex={0}
+              aria-label="Upload image: drag and drop or press Enter to browse"
               style={{ ...s.dropzone, ...(dragOver ? s.dropzoneActive : {}) }}
               onDragOver={e => { e.preventDefault(); setDragOver(true); }}
               onDragLeave={() => setDragOver(false)}
               onDrop={handleDrop}
+              onKeyDown={e => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault();
+                  document.getElementById('cc-file-input')?.click();
+                }
+              }}
             >
               {preview ? (
                 <div style={s.previewWrap}>
@@ -262,7 +271,7 @@ function ComplaintForm() {
                   <p style={s.dropzoneText}>Drag &amp; drop an image here, or</p>
                   <label style={s.browseBtn}>
                     Browse File
-                    <input type="file" name="image" accept="image/jpeg,image/png" onChange={handleChange} style={{ display: 'none' }} />
+                    <input id="cc-file-input" type="file" name="image" accept="image/jpeg,image/png" onChange={handleChange} style={{ display: 'none' }} />
                   </label>
                   <p style={s.dropzoneHint}>Supports JPG, PNG · Max 5 MB</p>
                 </>

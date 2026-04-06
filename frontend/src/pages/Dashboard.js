@@ -42,6 +42,13 @@ function Dashboard() {
 
   const navigate = useNavigate();
 
+  // Close sidebar on Escape key
+  useEffect(() => {
+    const onKey = (e) => { if (e.key === 'Escape') setSidebarOpen(false); };
+    document.addEventListener('keydown', onKey);
+    return () => document.removeEventListener('keydown', onKey);
+  }, []);
+
   useEffect(() => {
     if (!isAuthenticated()) {
       navigate('/login');
@@ -198,6 +205,7 @@ function Dashboard() {
                 placeholder="Search by title or location…"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
+                aria-label="Search complaints by title or location"
                 style={s.searchInput}
               />
             </div>
