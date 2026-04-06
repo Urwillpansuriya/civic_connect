@@ -84,7 +84,7 @@ function Dashboard() {
   return (
     <div style={s.root}>
       {/* ── Sidebar ── */}
-      <aside style={{ ...s.sidebar, ...(sidebarOpen ? s.sidebarOpen : {}) }}>
+      <aside className={`cc-sidebar${sidebarOpen ? ' cc-sidebar-open' : ''}`} style={s.sidebar}>
         {/* Logo */}
         <div style={s.sidebarLogo}>
           <span style={{ fontSize: '22px' }}>🏛️</span>
@@ -127,7 +127,7 @@ function Dashboard() {
       {/* ── Main Content ── */}
       <main style={s.main}>
         {/* Mobile header */}
-        <div style={s.mobileHeader}>
+        <div className="cc-mobile-header" style={s.mobileHeader}>
           <button style={s.menuBtn} onClick={() => setSidebarOpen(true)}>☰</button>
           <span style={s.mobileTitle}>CivicConnect</span>
         </div>
@@ -164,7 +164,7 @@ function Dashboard() {
               {userComplaints.map(c => (
                 <div key={c._id} style={s.complaintCard}>
                   {c.imageUrl && (
-                    <div style={s.cardImgWrap}>
+                    <div className="cc-card-img-wrap" style={s.cardImgWrap}>
                       <img src={getImageSrc(c.imageUrl)} alt="complaint" style={s.cardImg} />
                     </div>
                   )}
@@ -213,7 +213,7 @@ function Dashboard() {
               {filteredComplaints.map(c => (
                 <div key={c._id} style={s.complaintCard}>
                   {c.imageUrl && (
-                    <div style={s.cardImgWrap}>
+                    <div className="cc-card-img-wrap" style={s.cardImgWrap}>
                       <img src={getImageSrc(c.imageUrl)} alt="complaint" style={s.cardImg} />
                     </div>
                   )}
@@ -264,11 +264,6 @@ const s = {
     zIndex: 100,
     transition: 'transform 0.3s',
     flexShrink: 0
-  },
-  sidebarOpen: {
-    position: 'fixed',
-    left: 0, top: 0, bottom: 0,
-    transform: 'translateX(0)'
   },
   overlay: {
     position: 'fixed',

@@ -173,7 +173,7 @@ function ComplaintForm() {
           {/* Section: Location */}
           <div style={s.card}>
             <h3 style={s.cardTitle}>📍 Location Details</h3>
-            <div style={s.twoCol}>
+            <div className="cc-two-col" style={s.twoCol}>
               <div style={s.fieldGroup}>
                 <label style={s.label}>Place Name <span style={s.req}>*</span></label>
                 <input
@@ -199,7 +199,7 @@ function ComplaintForm() {
                 />
               </div>
             </div>
-            <div style={s.twoCol}>
+            <div className="cc-two-col" style={s.twoCol}>
               <div style={s.fieldGroup}>
                 <label style={s.label}>City Name <span style={s.req}>*</span></label>
                 <input

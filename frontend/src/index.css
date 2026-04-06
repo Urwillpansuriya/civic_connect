@@ -19,32 +19,31 @@ code {
     monospace;
 }
 
-/* ── Dashboard responsive layout ── */
+/* ── Dashboard: sidebar hidden on mobile by default ── */
 @media (max-width: 768px) {
-  /* Hide sidebar by default on mobile - controlled via JS transform */
   .cc-sidebar {
-    transform: translateX(-100%);
     position: fixed !important;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    transform: translateX(-100%);
+    height: 100vh !important;
   }
-  /* Show mobile header bar */
+  .cc-sidebar.cc-sidebar-open {
+    transform: translateX(0);
+  }
+  /* Show mobile header bar on small screens */
   .cc-mobile-header {
     display: flex !important;
-    align-items: center;
-    gap: 12px;
-    padding: 12px 16px;
-    background: #fff;
-    border-bottom: 1px solid #e5e7eb;
-    margin-bottom: 16px;
-    margin: -28px -28px 16px;
+  }
+  /* Hide image panel on very small screens */
+  .cc-card-img-wrap {
+    width: 110px !important;
+    min-width: 110px !important;
   }
   /* Two-col form grid stacks on mobile */
   .cc-two-col {
     grid-template-columns: 1fr !important;
-  }
-  /* Card image pane shrinks on small screens */
-  .cc-card-img-wrap {
-    width: 100px !important;
-    min-width: 100px !important;
   }
 }
 
