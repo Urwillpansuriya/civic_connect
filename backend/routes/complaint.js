@@ -51,7 +51,10 @@ router.get('/summary', authMiddleware, async (req, res) => {
       createdAt: { $gte: startOfDay, $lte: endOfDay }
     });
 
-    res.json({ statusCounts, todayCount });
+    const totalUsers = await require('../models/User').countDocuments();
+    const totalComplaints = await Complaint.countDocuments();
+
+    res.json({ statusCounts, todayCount, totalUsers, totalComplaints });
   } catch (err) {
     res.status(500).json({ error: 'Failed to fetch summary' });
   }
@@ -79,8 +82,9 @@ router.get('/', async (req, res) => {
   }
 });
 
-// ✅ Admin Status Update  (must be before /:id)
+// ✅ Admin Status Update  (both URL patterns supported)
 router.patch('/status/:id', authMiddleware, updateComplaintStatus);
+router.patch('/:id/status', authMiddleware, updateComplaintStatus);
 
 // ✅ Upvote / Unvote Complaint
 router.post('/:id/upvote', authMiddleware, async (req, res) => {
