@@ -4,7 +4,8 @@ import axios from 'axios';
 import { getToken } from '../utils/auth';
 import Modal from '../components/Modal';
 import CommentSection from '../components/CommentSection';
-const API_URL = "https://civic-connect-hams.onrender.com";
+import getImageSrc from '../utils/image';
+const API_URL = process.env.REACT_APP_API_URL || "https://civic-connect-hams.onrender.com";
 function ComplaintStatusPage() {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -61,7 +62,7 @@ function ComplaintStatusPage() {
       <p><strong>Date:</strong> {new Date(complaint.createdAt).toLocaleDateString()}</p>
       <p><strong>Likes:</strong> {complaint.likes ? complaint.likes.length : 0}</p>
       {complaint.imageUrl && (
-        <img src={`${API_URL}/uploads/${complaint.imageUrl}`} alt="complaint" style={{ width: '300px', marginTop: '10px', borderRadius: '6px' }} />
+        <img src={getImageSrc(complaint.imageUrl)} alt="complaint" style={{ width: '300px', marginTop: '10px', borderRadius: '6px' }} />
       )}
       
       <div style={{ marginTop: '20px', borderTop: '1px solid #ddd', paddingTop: '20px' }}>

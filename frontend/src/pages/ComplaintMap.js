@@ -3,7 +3,8 @@ import axios from 'axios';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
-const API_URL = "https://civic-connect-hams.onrender.com";
+import getImageSrc from '../utils/image';
+const API_URL = process.env.REACT_APP_API_URL || "https://civic-connect-hams.onrender.com";
 // Fix Leaflet marker icons
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
@@ -96,7 +97,7 @@ function ComplaintMap() {
                   {c.description && <p>{c.description}</p>}
                   {c.imageUrl && (
                     <img
-                      src={`${API_URL}/uploads/${c.imageUrl}`}
+                      src={getImageSrc(c.imageUrl)}
                       alt="Complaint"
                       style={{ width: '150px', borderRadius: '5px', marginTop: '5px' }}
                     />

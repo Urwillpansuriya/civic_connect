@@ -1,6 +1,7 @@
 const Complaint = require('../models/Complaint');
 const User = require('../models/User');
 const Comment = require('../models/Comment');
+const cloudinary = require('../config/cloudinary');
 
 exports.getComplaintSummary = async (req, res) => {
   try {
@@ -20,15 +21,15 @@ exports.getComplaintSummary = async (req, res) => {
       createdAt: { $gte: startOfDay, $lte: endOfDay }
     });
 
-    const totalUsers = await User.countDocuments(); // ⬅️ Add this line
-    console.log("Sending summary:", { totalUsers, statusCounts }); // 👈 DEBUG
+    const totalUsers = await User.countDocuments();
+    console.log("Sending summary:", { totalUsers, statusCounts });
     res.json({
       statusCounts,
       todayCount,
-      totalUsers // ⬅️ Add this to response
+      totalUsers
     });
   } catch (err) {
-    console.error("Summary error:", err); // 👈 DEBUG
+    console.error("Summary error:", err);
     res.status(500).json({ error: 'Failed to fetch summary' });
   }
 };
@@ -37,8 +38,11 @@ exports.getComplaintSummary = async (req, res) => {
 exports.submitComplaint = async (req, res) => {
   try {
     const { title, description, location, category, lat, lng, placeName, areaName, cityName } = req.body;
-    console.log('Received data:', req.body); // Log the received data
-    const imageUrl = req.file ? req.file.filename : null;
+    console.log('Received data:', req.body);
+
+    // Cloudinary: req.file.path = secure URL, req.file.filename = public_id
+    const imageUrl = req.file ? req.file.path : null;
+    const imagePublicId = req.file ? req.file.filename : null;
 
     let locationName = '';
     if (lat && lng) {
@@ -63,20 +67,25 @@ exports.submitComplaint = async (req, res) => {
       description,
       category,
       imageUrl,
+      imagePublicId,
       location: locationName || location,
-      placeName,  // ✅
-      areaName,   // ✅
-      cityName,    // ✅
+      placeName,
+      areaName,
+      cityName,
       coordinates: {
         lat: parseFloat(lat),
         lng: parseFloat(lng)
       },
-      user: req.user._id, // Use req.user._id from authMiddleware
+      user: req.user._id,
       createdBy: req.user._id,
       date: new Date()
     });
 
     await complaint.save();
+
+    // Emit real-time event so admin charts refresh
+    const io = req.app.get('io');
+    if (io) io.emit('complaint:new', { complaintId: complaint._id });
 
     return res.status(201).json({
       success: true,
@@ -96,10 +105,11 @@ exports.submitComplaint = async (req, res) => {
 // Add Complaint (alias for submitComplaint)
 exports.addComplaint = async (req, res) => {
   try {
-    const { title, description, location, category, lat, lng,placeName,
-      areaName,cityName } = req.body;
-      console.log('Received data:', req.body); // Log the received data
-    const imageUrl = req.file ? req.file.filename : null;
+    const { title, description, location, category, lat, lng, placeName, areaName, cityName } = req.body;
+    console.log('Received data:', req.body);
+
+    const imageUrl = req.file ? req.file.path : null;
+    const imagePublicId = req.file ? req.file.filename : null;
 
     let locationName = '';
     if (lat && lng) {
@@ -124,10 +134,11 @@ exports.addComplaint = async (req, res) => {
       description,
       category,
       imageUrl,
+      imagePublicId,
       location: locationName,
-      placeName,  // ✅
-      areaName,   // ✅
-      cityName,    // ✅
+      placeName,
+      areaName,
+      cityName,
       coordinates: {
         lat: parseFloat(lat),
         lng: parseFloat(lng)
@@ -137,6 +148,9 @@ exports.addComplaint = async (req, res) => {
     });
 
     await complaint.save();
+
+    const io = req.app.get('io');
+    if (io) io.emit('complaint:new', { complaintId: complaint._id });
 
     return res.status(201).json({
       success: true,
@@ -180,10 +194,8 @@ exports.getAllComplaints = async (req, res) => {
     if (location) query.location = new RegExp(location, 'i');
     if (category) query.category = category;
 
-    // Get total count for pagination
     const totalComplaints = await Complaint.countDocuments(query);
     
-    // Get complaints with pagination
     const complaints = await Complaint.find(query)
       .populate('createdBy', 'name email location')
       .populate('user', 'name email')
@@ -191,7 +203,6 @@ exports.getAllComplaints = async (req, res) => {
       .skip(skip)
       .limit(limitNum);
 
-    // Get comment counts for each complaint
     const complaintsWithCommentCounts = await Promise.all(complaints.map(async (complaint) => {
       const commentCount = await Comment.countDocuments({ complaint: complaint._id });
       return {
@@ -200,15 +211,12 @@ exports.getAllComplaints = async (req, res) => {
       };
     }));
 
-    // Get user count
     const totalUsers = await User.countDocuments();
     
-    // Get status counts
     const statusCounts = await Complaint.aggregate([
       { $group: { _id: '$status', count: { $sum: 1 } } }
     ]);
 
-    // Transform to { pending: 5, resolved: 3, ... }
     const statusMap = {
       pending: 0,
       'in-progress': 0,
@@ -219,9 +227,6 @@ exports.getAllComplaints = async (req, res) => {
     statusCounts.forEach(s => {
       if (s._id) statusMap[s._id] = s.count;
     });
-    
-    console.log("Status Map:", statusMap);
-    console.log("Total Pages:", Math.ceil(totalComplaints / limitNum));
     
     res.status(200).json({
       complaints: complaintsWithCommentCounts,
@@ -242,10 +247,6 @@ exports.updateComplaintStatus = async (req, res) => {
     const { id } = req.params;
     const { status } = req.body;
 
-    console.log('🚀 PATCH status called');
-    console.log('➡️ ID:', id);
-    console.log('➡️ New Status:', status);
-
     if (!status) {
       return res.status(400).json({ error: 'Status is required' });
     }
@@ -255,6 +256,10 @@ exports.updateComplaintStatus = async (req, res) => {
     if (!updated) {
       return res.status(404).json({ error: 'Complaint not found' });
     }
+
+    // Emit real-time event so admin charts refresh
+    const io = req.app.get('io');
+    if (io) io.emit('complaint:updated', { complaintId: updated._id, status: updated.status });
 
     return res.json({ message: 'Status updated', complaint: updated });
 
@@ -269,14 +274,24 @@ exports.deleteComplaint = async (req, res) => {
   try {
     const { id } = req.params;
     
-    console.log('🗑️ DELETE complaint called');
-    console.log('➡️ ID:', id);
-    
     const deleted = await Complaint.findByIdAndDelete(id);
     
     if (!deleted) {
       return res.status(404).json({ error: 'Complaint not found' });
     }
+
+    // Delete image from Cloudinary if public_id is stored
+    if (deleted.imagePublicId) {
+      try {
+        await cloudinary.uploader.destroy(deleted.imagePublicId);
+      } catch (cloudErr) {
+        console.warn('⚠️ Cloudinary image deletion failed:', cloudErr.message);
+      }
+    }
+
+    // Emit real-time event
+    const io = req.app.get('io');
+    if (io) io.emit('complaint:deleted', { complaintId: deleted._id });
     
     return res.json({ message: 'Complaint deleted successfully' });
     

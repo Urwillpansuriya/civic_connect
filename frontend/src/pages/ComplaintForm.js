@@ -159,7 +159,7 @@ import { useNavigate } from 'react-router-dom';
 import { getToken, isAuthenticated } from '../utils/auth';
 import MapPicker from '../components/MapPicker';
 import 'leaflet/dist/leaflet.css';
-const API_URL = "https://civic-connect-hams.onrender.com";
+const API_URL = process.env.REACT_APP_API_URL || "https://civic-connect-hams.onrender.com";
 
 function ComplaintForm() {
   const navigate = useNavigate();
@@ -204,13 +204,26 @@ function ComplaintForm() {
 
     if (name === 'image') {
       const file = files[0];
-      setFormData({ ...formData, [e.target.name]: e.target.value, image: file });
-
-      const reader = new FileReader();
-      reader.onloadend = () => setPreview(reader.result);
-      reader.readAsDataURL(file);
+      if (file) {
+        // Client-side validation: type (MIME types for jpg/jpeg/png)
+        if (!file.type.match(/^image\/(jpeg|png)$/)) {
+          setModal({ show: true, title: 'Invalid File', message: 'Only jpg, jpeg and png images are allowed.' });
+          e.target.value = '';
+          return;
+        }
+        // Client-side validation: size (5 MB)
+        if (file.size > 5 * 1024 * 1024) {
+          setModal({ show: true, title: 'File Too Large', message: 'Image must be smaller than 5 MB.' });
+          e.target.value = '';
+          return;
+        }
+        setFormData(prev => ({ ...prev, image: file }));
+        const reader = new FileReader();
+        reader.onloadend = () => setPreview(reader.result);
+        reader.readAsDataURL(file);
+      }
     } else {
-      setFormData({ ...formData, [name]: value });
+      setFormData(prev => ({ ...prev, [name]: value }));
     }
   };
 

@@ -1,32 +1,30 @@
 const multer = require('multer');
-const path = require('path');
+const { CloudinaryStorage } = require('multer-storage-cloudinary');
+const cloudinary = require('../config/cloudinary');
 
-// Configure storage
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, 'uploads/');
-  },
-  filename: (req, file, cb) => {
-    cb(null, Date.now() + '-' + file.originalname);
+// Cloudinary storage – images go to the 'civic_connect/complaints' folder
+const storage = new CloudinaryStorage({
+  cloudinary,
+  params: {
+    folder: 'civic_connect/complaints',
+    allowed_formats: ['jpg', 'jpeg', 'png'],
+    transformation: [{ quality: 'auto', fetch_format: 'auto' }]
   }
 });
 
-// File filter
+// File filter – only jpg/jpeg/png
 const fileFilter = (req, file, cb) => {
-  // Accept images only
-  if (!file.originalname.match(/\.(jpg|jpeg|png|gif)$/)) {
-    return cb(new Error('Only image files are allowed!'), false);
+  if (!file.originalname.match(/\.(jpg|jpeg|png)$/i)) {
+    return cb(new Error('Only jpg, jpeg and png image files are allowed!'), false);
   }
   cb(null, true);
 };
 
-// Configure multer
+// Configure multer with Cloudinary storage
 const upload = multer({
-  storage: storage,
-  limits: {
-    fileSize: 5 * 1024 * 1024 // 5MB max file size
-  },
-  fileFilter: fileFilter
+  storage,
+  limits: { fileSize: 5 * 1024 * 1024 }, // 5 MB
+  fileFilter
 });
 
 module.exports = upload;

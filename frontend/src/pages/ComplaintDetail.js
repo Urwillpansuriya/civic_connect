@@ -2,7 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
 import CommentSection from '../components/CommentSection';
-const API_URL = "https://civic-connect-hams.onrender.com";
+import getImageSrc from '../utils/image';
+const API_URL = process.env.REACT_APP_API_URL || "https://civic-connect-hams.onrender.com";
 function ComplaintDetail() {
   const { id } = useParams(); // Get complaint ID from URL
   const [complaint, setComplaint] = useState(null);
@@ -32,7 +33,7 @@ function ComplaintDetail() {
 
       {complaint.imageUrl && (
         <img
-          src={`http://localhost:5000/uploads/${complaint.imageUrl}`}
+          src={getImageSrc(complaint.imageUrl)}
           alt="Complaint"
           style={{ width: '300px', marginTop: '10px', borderRadius: '6px' }}
         />

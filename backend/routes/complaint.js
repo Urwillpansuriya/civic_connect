@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
-const multer = require('multer');
 const authMiddleware = require('../middleware/authMiddleware');
+const upload = require('../middleware/upload');
 const {
   submitComplaint,
   getAllComplaints,
@@ -9,15 +9,6 @@ const {
   deleteComplaint
 } = require('../controllers/complaintController');
 const Complaint = require('../models/Complaint');
-
-// ✅ Multer Upload Setup
-const storage = multer.diskStorage({
-  destination: 'uploads/',
-  filename: (req, file, cb) => {
-    cb(null, Date.now() + '-' + file.originalname);
-  }
-});
-const upload = multer({ storage });
 
 /* ----------------------------------
    ✅ ROUTES

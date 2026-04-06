@@ -200,6 +200,9 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import getImageSrc from '../utils/image';
+
+const API_URL = process.env.REACT_APP_API_URL || "https://civic-connect-hams.onrender.com";
 
 function PublicDashboard() {
   const [complaints, setComplaints] = useState([]);
@@ -207,7 +210,6 @@ function PublicDashboard() {
   const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-  const API_URL = "https://civic-connect-hams.onrender.com";
 
   const fetchComplaints = useCallback(async () => {
     try {
@@ -351,7 +353,7 @@ function PublicDashboard() {
                 <p style={styles.paragraph}><span style={styles.label}>Status:</span> {c.status}</p>
                 {c.imageUrl && (
                   <img
-                    src={`${API_URL}/uploads/${c.imageUrl}`}
+                    src={getImageSrc(c.imageUrl)}
                     alt="complaint"
                     style={styles.image}
                   />
