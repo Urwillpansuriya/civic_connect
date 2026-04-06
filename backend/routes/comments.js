@@ -77,8 +77,7 @@ const express = require('express');
 const router = express.Router();
 const Comment = require('../models/Comment'); // your Comment model
 const Complaint = require('../models/Complaint'); // your Complaint model
-const auth = require('../middleware/authMiddleware'); // middleware to get user from token
-const authMiddleware = require('../middleware/authMiddleware');
+const authMiddleware = require('../middleware/authMiddleware'); // middleware to get user from token
 
 // ✅ POST a comment on a complaint
 router.post('/:complaintId', authMiddleware, async (req, res) => {

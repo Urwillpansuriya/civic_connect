@@ -67,23 +67,54 @@ function Register() {
   const handleChange = e =>
     setFormData({ ...formData, [e.target.name]: e.target.value });
 
-  const handleSubmit = async e => {
-    e.preventDefault();
-    try {
-      const res = await axios.post('http://localhost:5000/api/auth/register', formData);
+//   const handleSubmit = async e => {
+//     e.preventDefault();
+//     try {
+//       const res = await axios.post('http://localhost:5000/api/auth/register', formData);
+//       localStorage.setItem('token', res.data.token);
+//       navigate('/dashboard');
+//     } catch (err) {
+//       // alert('Registration failed: ' + (err.response?.data?.error || err.message));
+//       setModal({
+//   show: true,
+//   title: 'Failed',
+//   message: 'Registration failed: ' + (err.response?.data?.error || err.message)
+
+// });
+
+//     }
+//   };
+const handleSubmit = async e => {
+  e.preventDefault();
+  try {
+    const res = await axios.post('http://localhost:5000/api/auth/register', formData);
+    
+    if (res.status === 201) { // Check if registration is successful
       localStorage.setItem('token', res.data.token);
-      navigate('/dashboard');
-    } catch (err) {
-      // alert('Registration failed: ' + (err.response?.data?.error || err.message));
+      // navigate('/dashboard');
       setModal({
-  show: true,
-  title: 'Failed',
-  message: 'Registration failed: ' + (err.response?.data?.error || err.message)
-
-});
-
+        show: true,
+        title: 'successful',
+        message: 'Registration successful: ' + res.data.message
+      });
+    } else {
+      // Show error modal if registration fails
+      setModal({
+        show: true,
+        title: 'Failed',
+        message: 'Registration failed: ' + (res.data?.error || 'Unknown error')
+      });
     }
-  };
+  } catch (err) {
+    // Show error modal if there's an error in the request
+    setModal({
+      show: true,
+      title: 'Failed',
+      message: 'Registration failed: ' + (err.response?.data?.error || err.message)
+    });
+  }
+};
+
 
   return (
     <div style={styles.container}>

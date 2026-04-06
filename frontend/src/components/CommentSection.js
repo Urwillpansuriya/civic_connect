@@ -9,7 +9,7 @@ const CommentSection = ({ complaintId }) => {
 
   useEffect(() => {
     fetchComments();
-  }, );
+  }, [complaintId]);
 
   const fetchComments = async () => {
     try {

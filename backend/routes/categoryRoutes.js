@@ -3,11 +3,11 @@
 const express = require('express');
 const router = express.Router();
 const Category = require('../models/Category');
-const auth = require('../middleware/authMiddleware'); // Make sure auth.js exists
+const authMiddleware = require('../middleware/authMiddleware'); // Make sure auth.js exists
 const isAdmin = require('../middleware/isAdmin'); // Optional if using role-based access
 
 // Add new category
-router.post('/add', auth, async (req, res) => {
+router.post('/add', authMiddleware, async (req, res) => {
   try {
     const { name } = req.body;
     if (!name || name.trim() === '') return res.status(400).json({ error: 'Category name is required' });

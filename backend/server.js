@@ -5,12 +5,13 @@ const cors = require('cors');
 const path = require('path');
 const commentRoutes = require('./routes/comments');
 const categoryRoutes = require('./routes/categoryRoutes');
+const complaintRoutes = require('./routes/complaintRoutes'); // Import complaint routes
+const complaintRouter = require('./routes/complaint'); // Import main complaint router
+const app = express();   // Init app
 // Load env
 dotenv.config();
 
-// Init app
-const app = express();
-// Add middleware first
+app.use('/api/categories', categoryRoutes); // ✅ Category route works here
 app.use(cors({
   origin: 'http://localhost:3000', // allow frontend
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
@@ -18,9 +19,7 @@ app.use(cors({
   allowedHeaders: ['Content-Type', 'Authorization']
 }));
 app.use(express.json());
-// Then register routes
-app.use('/api/categories', categoryRoutes); // Category route works here
-app.use('/api/comments', commentRoutes); // Comment route works here
+app.use('/api/comments', commentRoutes); // ✅ Comment route works here
 // Middleware
 // app.use(cors());
 // MongoDB Connection
@@ -33,7 +32,7 @@ mongoose.connect(process.env.MONGO_URI, {
 
 // Routes
 app.use('/api/auth', require('./routes/auth'));
-app.use('/api/complaints', require('./routes/complaint'));
+// Complaint routes already registered above
 app.use('/api/export', require('./routes/export')); // ✅ CSV route works here
 // Serve uploaded images
 app.use('/uploads', express.static('uploads'));

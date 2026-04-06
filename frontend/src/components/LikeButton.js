@@ -7,6 +7,7 @@ function LikeButton({ complaintId, initialLikes = 0 }) {
 
   const handleLike = async () => {
     try {
+      // Fix: Update the API endpoint to match the backend route structure
       const res = await axios.post(`http://localhost:5000/api/complaints/like/${complaintId}`, {}, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem('token')}`
@@ -16,7 +17,7 @@ function LikeButton({ complaintId, initialLikes = 0 }) {
       setClicked(!clicked);
     } catch (err) {
       console.error('Like error:', err);
-      alert('Login required to like a complaint.');
+        alert('Login required to like a complaint.');
     }
   };
 

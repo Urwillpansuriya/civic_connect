@@ -2,7 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { getToken } from '../utils/auth';
-import Modal from '../components/Modal'; // adjust the path as needed
+import Modal from '../components/Modal';
+import CommentSection from '../components/CommentSection';
 
 function ComplaintStatusPage() {
   const { id } = useParams();
@@ -27,7 +28,7 @@ function ComplaintStatusPage() {
 
   const updateStatus = async (newStatus) => {
     try {
-      await axios.patch(`http://localhost:5000/api/complaints/status/${id}`, { status: newStatus }, {
+      await axios.patch(`http://localhost:5000/api/complaints/${id}/status`, { status: newStatus }, {
         headers: { Authorization: `Bearer ${getToken()}` }
       });
       setStatus(newStatus);
@@ -58,9 +59,15 @@ function ComplaintStatusPage() {
       <p><strong>Status:</strong> <span style={{ fontWeight: 'bold' }}>{status}</span></p>
       <p><strong>User:</strong> {complaint.user?.name || complaint.createdBy?.name || 'Unknown'}</p>
       <p><strong>Date:</strong> {new Date(complaint.createdAt).toLocaleDateString()}</p>
+      <p><strong>Likes:</strong> {complaint.likes ? complaint.likes.length : 0}</p>
       {complaint.imageUrl && (
         <img src={`http://localhost:5000/uploads/${complaint.imageUrl}`} alt="complaint" style={{ width: '300px', marginTop: '10px', borderRadius: '6px' }} />
       )}
+      
+      <div style={{ marginTop: '20px', borderTop: '1px solid #ddd', paddingTop: '20px' }}>
+        <h3>Comments</h3>
+        <CommentSection complaintId={id} />
+      </div>
       <div style={{ marginTop: '30px' }}>
         <button
           onClick={() => updateStatus('pending')}

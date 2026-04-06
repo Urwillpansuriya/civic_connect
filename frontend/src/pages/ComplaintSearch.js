@@ -15,7 +15,9 @@ function ComplaintSearch() {
 
     try {
       const res = await axios.get(`http://localhost:5000/api/complaints/search?q=${query}`);
-      setResults(res.data);
+      // Handle both array and object with complaints property
+      const complaintsData = res.data.complaints || res.data;
+      setResults(Array.isArray(complaintsData) ? complaintsData : []);
     } catch (err) {
       console.error('Search failed:', err);
       setModal({

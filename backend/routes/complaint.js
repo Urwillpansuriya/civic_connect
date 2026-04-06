@@ -9,6 +9,7 @@ const {
   updateComplaintStatus
 } = require('../controllers/complaintController');
 const Complaint = require('../models/Complaint');
+const { verify } = require('jsonwebtoken');
 
 // ✅ Multer Upload Setup
 const storage = multer.diskStorage({
@@ -45,23 +46,57 @@ router.get('/all', authMiddleware, async (req, res) => {
     const limit = parseInt(req.query.limit) || 10;
     const skip = (page - 1) * limit;
 
-    const [complaints, total] = await Promise.all([
-      Complaint.find()
-        .populate('user', 'name')
-        .populate('createdBy', 'name')
-        .sort({ createdAt: -1 })
-        .skip(skip)
-        .limit(limit),
-      Complaint.countDocuments()
+    // Get complaints with populated comments
+    const complaintsQuery = Complaint.find()
+      .populate('user', 'name')
+      .populate('createdBy', 'name')
+      .populate('comments')
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit);
+
+    // Get total complaints count
+    const countQuery = Complaint.countDocuments();
+
+    // Get user count
+    const userCountQuery = require('../models/User').countDocuments();
+
+    // Get status counts
+    const statusQuery = Complaint.aggregate([
+      { $group: { _id: '$status', count: { $sum: 1 } } }
     ]);
 
+    // Execute all queries in parallel
+    const [complaints, total, totalUsers, statusCounts] = await Promise.all([
+      complaintsQuery,
+      countQuery,
+      userCountQuery,
+      statusQuery
+    ]);
+
+    // Transform status counts into a more usable object
+    const statusCountsObj = {};
+    statusCounts.forEach(item => {
+      statusCountsObj[item._id] = item.count;
+    });
+
+    // Add comment count to each complaint
+    const complaintsWithCommentCount = complaints.map(c => {
+      const complaint = c.toObject();
+      complaint.commentCount = complaint.comments ? complaint.comments.length : 0;
+      return complaint;
+    });
+
     res.json({
-      complaints,
+      complaints: complaintsWithCommentCount,
       total,
+      totalUsers,
+      statusCounts: statusCountsObj,
       page,
       totalPages: Math.ceil(total / limit)
     });
   } catch (err) {
+    console.error('Error in /all:', err);
     res.status(500).json({ error: 'Failed to fetch complaints' });
   }
 });
@@ -89,6 +124,17 @@ router.get('/', async (req, res) => {
       page,
       totalPages: Math.ceil(total / limit)
     });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to fetch complaints' });
+  }
+});
+
+
+// ✅ Public route to get all complaints (no auth middleware)
+router.get('/', async (req, res) => {
+  try {
+    const complaints = await Complaint.find().populate('user', 'name');
+    res.json(complaints);
   } catch (err) {
     console.error('Error fetching complaints:', err);
     res.status(500).json({ error: 'Internal server error' });
@@ -188,7 +234,7 @@ router.get('/summary', authMiddleware, async (req, res) => {
     for (const status of statuses) {
       statusCounts[status] = await Complaint.countDocuments({ status });
     }
-
+    
     // Count today's complaints
     const startOfDay = new Date();
     startOfDay.setHours(0, 0, 0, 0);
@@ -208,42 +254,25 @@ router.get('/summary', authMiddleware, async (req, res) => {
   }
 });
 
-// server/routes/complaints.js
+// Search route is now in complaintRoutes.js
 
-router.get('/search', async (req, res) => {
+// DELETE /api/complaints/:id
+router.delete('/:id', authMiddleware, async (req, res) => {
   try {
     const query = req.query.q || '';
-    const page = parseInt(req.query.page) || 1;
-    const limit = parseInt(req.query.limit) || 10;
-    const skip = (page - 1) * limit;
     const regex = new RegExp(query, 'i'); // Case-insensitive search
 
-    const searchQuery = {
+    const complaints = await Complaint.find({
       $or: [
         { title: regex },
         { location: regex }
       ]
-    };
-
-    const [complaints, total] = await Promise.all([
-      Complaint.find(searchQuery)
-        .sort({ createdAt: -1 })
-        .skip(skip)
-        .limit(limit),
-      Complaint.countDocuments(searchQuery)
-    ]);
-
-    res.json({
-      complaints,
-      total,
-      page,
-      totalPages: Math.ceil(total / limit)
     });
+
+    res.json(complaints);
   } catch (err) {
-    console.error('Search error:', err);
-    res.status(500).json({ error: 'Internal server error' });
+    res.status(500).json({ message: 'Server error', error: err });
   }
 });
-
 
 module.exports = router;

@@ -7,5 +7,7 @@ router.post('/register', registerUser);
 
 // POST /api/auth/login
 router.post('/login', loginUser);
+// Middleware to protect routes
+
 
 module.exports = router;

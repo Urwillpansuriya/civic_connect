@@ -197,6 +197,7 @@ function ComplaintForm() {
     }
   };
 
+
   // useEffect(() => {
   //   axios.get('http://localhost:5000/api/categories')
   //     .then(res => setCategories(res.data))
@@ -206,21 +207,21 @@ function ComplaintForm() {
   //     });
   // }, []);
 
-  useEffect(() => {
-  axios.get('http://localhost:5000/api/categories')
-    .then(res => {
-      const catArray = Array.isArray(res.data)
-        ? res.data
-        : Array.isArray(res.data.categories)
-        ? res.data.categories
-        : [];
-      setCategories(catArray);
-    })
-    .catch(err => {
-      console.error('Failed to load categories', err);
-      setCategories([]);
-    });
-}, []);
+//   useEffect(() => {
+//   axios.get('http://localhost:5000/api/categories')
+//     .then(res => {
+//       const catArray = Array.isArray(res.data)
+//         ? res.data
+//         : Array.isArray(res.data.categories)
+//         ? res.data.categories
+//         : [];
+//       setCategories(catArray);
+//     })
+//     .catch(err => {
+//       console.error('Failed to load categories', err);
+//       setCategories([]);
+//     });
+// }, []);
 
 
   const handleSubmit = async e => {
@@ -280,17 +281,37 @@ function ComplaintForm() {
       });
     }
   };
+  <style>
+{`
+  @media (max-width: 600px) {
+    input, textarea, select, button {
+      font-size: 15px !important;
+    }
+
+    input[type="file"] {
+      font-size: 13px !important;
+    }
+
+    img {
+      max-width: 100% !important;
+      height: auto !important;
+    }
+  }
+`}
+</style>
 
   // 🔶 Internal CSS Styles
   const containerStyle = {
     maxWidth: '600px',
+     width: '100%',
     margin: '30px auto',
     padding: '20px',
     border: '1px solid #ddd',
     borderRadius: '10px',
     boxShadow: '0 0 10px rgba(0,0,0,0.1)',
     fontFamily: 'Arial, sans-serif',
-    backgroundColor: '#fafafa'
+    backgroundColor: '#fafafa',
+    boxSizing: 'border-box'
   };
 
   const inputStyle = {
@@ -302,7 +323,8 @@ function ComplaintForm() {
   borderRadius: '6px',
   border: '1px solid #ccc',
   backgroundColor: '#fff',
-  boxSizing: 'border-box'
+  boxSizing: 'border-box',
+  display: 'block'
 };
 
 
@@ -330,6 +352,7 @@ function ComplaintForm() {
 
   const previewStyle = {
     width: '200px',
+    maxWidth: '300px',
     margin: '10px 0',
     borderRadius: '8px',
     border: '1px solid #ccc'
