@@ -1,4 +1,6 @@
 const express = require('express');
+const http = require('http');
+const { Server } = require('socket.io');
 const mongoose = require('mongoose');
 const dotenv = require('dotenv');
 const cors = require('cors');
@@ -10,8 +12,10 @@ dotenv.config();
 const commentRoutes = require('./routes/comments');
 const categoryRoutes = require('./routes/categoryRoutes');
 const complaintRouter = require('./routes/complaint'); // Main complaint router
+const analyticsRouter = require('./routes/analytics');
 
 const app = express();
+const server = http.createServer(app);
 
 // ─── Global Middleware (must come before all routes) ────────────────────────
 
@@ -34,6 +38,25 @@ app.use(cors({
 
 app.use(express.json());
 
+// ─── Socket.io ───────────────────────────────────────────────────────────────
+const io = new Server(server, {
+  cors: {
+    origin: allowedOrigins || '*',
+    methods: ['GET', 'POST'],
+    credentials: !!allowedOrigins
+  }
+});
+
+io.on('connection', (socket) => {
+  console.log('🔌 Socket connected:', socket.id);
+  socket.on('disconnect', () => {
+    console.log('🔌 Socket disconnected:', socket.id);
+  });
+});
+
+// Attach io to app so controllers can emit events via req.app.get('io')
+app.set('io', io);
+
 // ─── MongoDB Connection ──────────────────────────────────────────────────────
 mongoose.connect(process.env.MONGO_URI, {
   useNewUrlParser: true,
@@ -48,12 +71,13 @@ app.use('/api/complaints', complaintRouter);
 app.use('/api/categories', categoryRoutes);
 app.use('/api/comments', commentRoutes);
 app.use('/api/export', require('./routes/export'));
+app.use('/api/analytics', analyticsRouter);
 
-// Serve uploaded images
+// Serve uploaded images (kept for any legacy local images)
 app.use('/uploads', express.static('uploads'));
 
 // ─── Start Server ────────────────────────────────────────────────────────────
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
+server.listen(PORT, () => {
   console.log(`🚀 Server running at http://localhost:${PORT}`);
 });

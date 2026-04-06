@@ -1,14 +1,14 @@
 # 🌍 Civic Connect – Smart Civic Complaint Portal (MERN)
 
 Civic Connect is a full-stack MERN application that allows citizens to report civic issues such as road damage, drainage problems, garbage collection, etc.  
-The platform helps administrators track, manage, and resolve complaints efficiently using maps, analytics, comments, and notifications.
+The platform helps administrators track, manage, and resolve complaints efficiently using maps, real-time analytics, comments, and notifications.
 
 ---
 
 ## 🚀 Features
 
 ### 👤 User Features
-- Submit complaints with image and location
+- Submit complaints with image (uploaded to Cloudinary) and location
 - Map-based complaint visualization
 - Comment on complaints
 - Like / Upvote complaints
@@ -17,6 +17,7 @@ The platform helps administrators track, manage, and resolve complaints efficien
 
 ### 🧑‍💼 Admin Features
 - Admin dashboard with statistics
+- **Real-time analytics charts** (complaints per day + status breakdown) via Socket.io
 - Search & filter complaints
 - Comment count per complaint
 - Change complaint status
@@ -29,10 +30,16 @@ The platform helps administrators track, manage, and resolve complaints efficien
 - Popup with complaint details
 - Heatmap ready structure
 
-### 📊 Analytics (Ready)
-- Status wise stats
-- Category trends
-- Daily complaint count
+### 📊 Analytics (Live)
+- Status-wise stats (Pending / In-Progress / Resolved / Rejected)
+- Daily complaint count with 7-day / 30-day toggle
+- Both charts auto-refresh via Socket.io when complaints change
+
+### 🖼 Image Upload
+- Images uploaded directly to **Cloudinary**
+- Full Cloudinary URL stored in MongoDB
+- Optional `imagePublicId` stored for future Cloudinary deletion
+- Deleted complaints also remove their Cloudinary image
 
 ---
 
@@ -63,74 +70,127 @@ Frontend:
 - Axios
 - React Router
 - Leaflet
+- Recharts (charts)
+- Socket.io-client (real-time updates)
 
 Backend:
 - Node.js
 - Express.js
-- MongoDB
+- MongoDB (Mongoose)
 - JWT Authentication
-
-Other:
-- Multer (image upload)
-- Cloudinary (optional)
-- Chart.js (analytics)
+- Socket.io (WebSocket events)
+- Cloudinary (image storage)
+- Multer + multer-storage-cloudinary (upload middleware)
 
 ---
 
 ## 📂 Project Structure
-client/
-components/
-pages/
-utils/
-
-server/
-controllers/
-models/
-routes/
-middleware/
-
+```
+civic_connect/
+├── backend/
+│   ├── config/cloudinary.js      # Cloudinary SDK config
+│   ├── controllers/
+│   ├── middleware/upload.js       # Multer + Cloudinary storage
+│   ├── models/
+│   ├── routes/analytics.js       # /api/analytics endpoints
+│   └── server.js                 # Express + Socket.io server
+└── frontend/
+    ├── src/
+    │   ├── components/AdminCharts.js  # Real-time admin charts
+    │   └── pages/
+```
 
 ---
 
 ## ⚙️ Installation
 
 ### 1️⃣ Clone repo
-git clone https://github.com/yourusername/civic-connect.git
+```bash
+git clone https://github.com/Urwillpansuriya/civic_connect.git
+```
 
 ### 2️⃣ Install dependencies
-cd client
-npm install
-
-cd ../server
-npm install
+```bash
+cd backend && npm install
+cd ../frontend && npm install
+```
 
 ### 3️⃣ Environment variables
 
-Create `.env` in server:
+**Backend** – create `backend/.env` (never commit this file):
+
+```env
 PORT=5000
-MONGO_URI=your_mongodb_url
-JWT_SECRET=your_secret
+MONGO_URI=your_mongodb_connection_string
+JWT_SECRET=your_jwt_secret_key
 
-### 4️⃣ Run project
+# Cloudinary – get these from https://cloudinary.com/console
+CLOUDINARY_CLOUD_NAME=your_cloud_name
+CLOUDINARY_API_KEY=your_api_key
+CLOUDINARY_API_SECRET=your_api_secret
 
-Server:
-npm start
+# CORS – comma-separated list of allowed frontend origins
+# Leave blank during local dev to allow all origins
+CORS_ORIGIN=https://your-app.vercel.app
+```
 
-Client:
-npm start
+**Frontend** – create `frontend/.env` (optional):
+
+```env
+# Override the default backend URL
+REACT_APP_API_URL=https://your-backend.onrender.com
+```
+
+### 4️⃣ Run project locally
+
+```bash
+# Terminal 1 – backend
+cd backend && npm run dev
+
+# Terminal 2 – frontend
+cd frontend && npm start
+```
 
 ---
 
-## 🔑 Key Functionalities Implemented
+## 🚢 Deployment
 
-- Complaint CRUD
-- Pagination
-- Search & filtering
+### Backend → Render
+
+1. Push code to GitHub.
+2. Create a new **Web Service** on [Render](https://render.com).
+   - Root directory: `backend`
+   - Build command: `npm install`
+   - Start command: `npm start`
+3. Add all environment variables listed above in the Render dashboard
+   (Environment → Add Environment Variable).
+4. Set `CORS_ORIGIN` to your Vercel frontend URL, e.g.  
+   `CORS_ORIGIN=https://civic-connect-xxx.vercel.app`
+5. Note the Render URL (e.g. `https://civic-connect-hams.onrender.com`).
+
+### Frontend → Vercel
+
+1. Import the GitHub repo on [Vercel](https://vercel.com).
+   - Root directory: `frontend`
+   - Framework preset: **Create React App**
+2. Add environment variable:  
+   `REACT_APP_API_URL=https://civic-connect-hams.onrender.com`
+3. Deploy – Vercel will run `npm run build` automatically.
+4. Copy the Vercel URL and update `CORS_ORIGIN` on Render.
+
+> **Note:** Socket.io requires WebSocket support. Render Web Services support WebSockets by default. Vercel only hosts static files, so the Socket.io server must remain on Render.
+
+---
+
+## 🔑 Key Functionalities
+
+- Complaint CRUD with Cloudinary image storage
+- Pagination & search / filtering
 - Comment system
-- Comment count aggregation
+- Real-time admin charts (Socket.io)
 - Map markers
-- Image upload
-- Admin status update
+- Admin status updates (broadcast via socket)
+- Complaint deletion removes Cloudinary image
 
 ---
 

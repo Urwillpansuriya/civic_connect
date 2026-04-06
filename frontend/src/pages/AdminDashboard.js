@@ -245,10 +245,10 @@ import axios from 'axios';
 import { getToken } from '../utils/auth';
 import { useNavigate } from 'react-router-dom';
 import AddCategory from './AddCategory';
-import UserLoginGraph from '../components/UserLoginGraph';
+import AdminCharts from '../components/AdminCharts';
 import CommentSection from '../components/CommentSection';
 import Modal from '../components/Modal';
-const API_URL = "https://civic-connect-hams.onrender.com";
+const API_URL = process.env.REACT_APP_API_URL || "https://civic-connect-hams.onrender.com";
 function AdminDashboard() {
   const [complaints, setComplaints] = useState([]);
   const [summary, setSummary] = useState(null);
@@ -405,8 +405,8 @@ function AdminDashboard() {
           <h2>{summary?.statusCounts?.resolved || 0}</h2>
         </div>
       </div>
-      {/* 🔹 User Login Graph */}
-        <UserLoginGraph />
+      {/* 🔹 Real-time Analytics Charts */}
+        <AdminCharts />
         <h3 style={{ marginBottom: '8px' }}>Search Complaints</h3>
     <input
           type="text"

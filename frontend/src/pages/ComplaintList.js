@@ -2,7 +2,8 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { getToken, isAuthenticated } from '../utils/auth';
-const API_URL = "https://civic-connect-hams.onrender.com";
+import getImageSrc from '../utils/image';
+const API_URL = process.env.REACT_APP_API_URL || "https://civic-connect-hams.onrender.com";
 function ComplaintList() {
   const [complaints, setComplaints] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
@@ -83,7 +84,7 @@ function ComplaintList() {
               <p><strong>Status:</strong> {c.status}</p>
               {c.imageUrl && (
                 <img
-                  src={`${API_URL}/uploads/${c.imageUrl}`}
+                  src={getImageSrc(c.imageUrl)}
                   alt="Complaint"
                   style={{ width: '200px', marginTop: '10px' }}
                 />

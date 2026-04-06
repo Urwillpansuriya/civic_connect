@@ -35,6 +35,7 @@ const complaintSchema = new mongoose.Schema({
   },
 
   imageUrl: { type: String },
+  imagePublicId: { type: String },
 
   status: {
     type: String,

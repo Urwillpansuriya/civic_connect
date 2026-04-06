@@ -2,7 +2,8 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useParams } from 'react-router-dom';
 import { getToken } from '../utils/auth';
-const API_URL = "https://civic-connect-hams.onrender.com";
+import getImageSrc from '../utils/image';
+const API_URL = process.env.REACT_APP_API_URL || "https://civic-connect-hams.onrender.com";
 function ComplaintDetailPage() {
   const { id } = useParams();
   const [complaint, setComplaint] = useState(null);
@@ -25,7 +26,7 @@ function ComplaintDetailPage() {
       <p><strong>Date:</strong> {new Date(complaint.createdAt).toLocaleString()}</p>
       {complaint.image && (
         <img
-          src={`${API_URL}/uploads/${complaint.image}`}
+          src={getImageSrc(complaint.image)}
           alt="Complaint"
           style={{ width: '300px', marginTop: '20px' }}
         />
