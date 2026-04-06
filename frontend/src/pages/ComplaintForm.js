@@ -1,158 +1,3 @@
-// import React, { useState } from 'react';
-// import axios from 'axios';
-// import { useNavigate } from 'react-router-dom';
-// import { getToken, isAuthenticated } from '../utils/auth';
-// import MapPicker from '../components/MapPicker';
-// import 'leaflet/dist/leaflet.css';
-
-// function ComplaintForm() {
-//   const navigate = useNavigate();
-
-//   const [formData, setFormData] = useState({
-//     title: '',
-//     description: '',
-//     category: '',
-//     image: null
-//   });
-
-//   const [preview, setPreview] = useState(null);
-//   const [coordinates, setCoordinates] = useState({ lat: '', lng: '', location: '' });
-
-//   const handleChange = e => {
-//     const { name, value, files } = e.target;
-
-//     if (name === 'image') {
-//       const file = files[0];
-//       setFormData({ ...formData, image: file });
-
-//       const reader = new FileReader();
-//       reader.onloadend = () => setPreview(reader.result);
-//       reader.readAsDataURL(file);
-//     } else {
-//       setFormData({ ...formData, [name]: value });
-//     }
-//   };
-
-// const handleSubmit = async e => {
-//   e.preventDefault();
-
-//   if (!isAuthenticated()) {
-//     alert('Please login first');
-//     navigate('/login');
-//     return;
-//   }
-
-//   try {
-//     const token = getToken();
-//     const data = new FormData();
-//     data.append('title', formData.title);
-//     data.append('description', formData.description);
-//     data.append('location', coordinates.location || 'Unknown');
-//     data.append('category', formData.category);
-//     data.append('lat', coordinates.lat);
-//     data.append('lng', coordinates.lng);
-//     if (formData.image) {
-//       data.append('image', formData.image);
-//     }
-
-//     // 🐞 LOGGING for Debug
-//     console.log("Submitting complaint with data:", {
-//       title: formData.title,
-//       description: formData.description,
-//       category: formData.category,
-//       lat: coordinates.lat,
-//       lng: coordinates.lng,
-//       location: coordinates.location,
-//       image: formData.image,
-//     });
-//     console.log('🚀 FormData before submit:', Object.fromEntries(data.entries()));
-//     // ✅ Save response properly
-//     const res = await axios.post('http://localhost:5000/api/complaints/add', data, {
-//       headers: {
-//         'Authorization': `Bearer ${token}`,
-//         'Content-Type': 'multipart/form-data'
-//       }
-//     });
-
-//     // ✅ Safe access
-//     if (res && res.data) {
-//       alert('Complaint submitted!');
-//       navigate('/dashboard');
-//     } else {
-//       alert('Server responded but no data returned.');
-//       console.warn('Response:', res);
-//     }
-
-//   } catch (err) {
-//     // 🐞 Show EXACT error
-//     console.error('Submission error:', err);
-//     if (err.response) {
-//       console.error('Error response from server:', err.response.data);
-//     }
-//     alert('Error submitting complaint. See console.');
-//   }
-// };
-
-//   return (
-//     <div>
-//       <h2>Submit a Complaint</h2>
-//       <form onSubmit={handleSubmit}>
-
-//         <input
-//           type="text"
-//           name="title"
-//           placeholder="Title"
-//           onChange={handleChange}
-//           required
-//         /><br />
-
-//         <textarea
-//           name="description"
-//           placeholder="Description"
-//           onChange={handleChange}
-//         /><br />
-
-//         <input
-//           type="text"
-//           name="location"
-//           placeholder="Location"
-//           value={coordinates.location}
-//           readOnly
-//         /><br />
-
-//         <select name="category" onChange={handleChange} required>
-//           <option value="">Select Category</option>
-//           <option value="Road">Road</option>
-//           <option value="Drainage">Drainage</option>
-//           <option value="Garbage">Garbage</option>
-//           <option value="Electricity">Electricity</option>
-//           <option value="Other">Other</option>
-//         </select><br />
-
-//         <p>Date: {new Date().toLocaleDateString()}</p>
-
-//         <input type="file" name="image" onChange={handleChange} /><br />
-//         {preview && <img src={preview} alt="Preview" style={{ width: '200px', margin: '10px 0' }} />}
-
-//         <MapPicker
-//           onLocationSelect={(lat, lng, locationName) => {
-//             console.log('Map selected:', lat, lng, locationName);
-//             setCoordinates({ lat, lng, location: locationName });
-//           }}
-//         />
-
-//         <button type="submit">Submit</button>
-//       </form>
-//     </div>
-//   );
-// }
-
-// export default ComplaintForm;
-
-
-
-
-
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
@@ -170,18 +15,15 @@ function ComplaintForm() {
     category: '',
     image: null,
     placeName: '',
-   areaName: '',
-   cityName: ''
+    areaName: '',
+    cityName: ''
   });
 
   const [preview, setPreview] = useState(null);
   const [coordinates, setCoordinates] = useState({ lat: '', lng: '', location: '' });
   const [categories, setCategories] = useState([]);
-  const [modal, setModal] = useState({
-    show: false,
-    title: '',
-    message: ''
-  });
+  const [modal, setModal] = useState({ show: false, title: '', message: '' });
+  const [dragOver, setDragOver] = useState(false);
 
   useEffect(() => {
     axios.get(`${API_URL}/api/categories`)
@@ -199,70 +41,52 @@ function ComplaintForm() {
       });
   }, []);
 
+  const validateImage = (file, inputRef) => {
+    if (!file.type.match(/^image\/(jpeg|png)$/)) {
+      setModal({ show: true, title: 'Invalid File', message: 'Only jpg, jpeg and png images are allowed.' });
+      if (inputRef) inputRef.value = '';
+      return false;
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      setModal({ show: true, title: 'File Too Large', message: 'Image must be smaller than 5 MB.' });
+      if (inputRef) inputRef.value = '';
+      return false;
+    }
+    return true;
+  };
+
+  const applyImage = (file) => {
+    setFormData(prev => ({ ...prev, image: file }));
+    const reader = new FileReader();
+    reader.onloadend = () => setPreview(reader.result);
+    reader.readAsDataURL(file);
+  };
+
   const handleChange = e => {
     const { name, value, files } = e.target;
-
     if (name === 'image') {
       const file = files[0];
-      if (file) {
-        // Client-side validation: type (MIME types for jpg/jpeg/png)
-        if (!file.type.match(/^image\/(jpeg|png)$/)) {
-          setModal({ show: true, title: 'Invalid File', message: 'Only jpg, jpeg and png images are allowed.' });
-          e.target.value = '';
-          return;
-        }
-        // Client-side validation: size (5 MB)
-        if (file.size > 5 * 1024 * 1024) {
-          setModal({ show: true, title: 'File Too Large', message: 'Image must be smaller than 5 MB.' });
-          e.target.value = '';
-          return;
-        }
-        setFormData(prev => ({ ...prev, image: file }));
-        const reader = new FileReader();
-        reader.onloadend = () => setPreview(reader.result);
-        reader.readAsDataURL(file);
+      if (file && validateImage(file, e.target)) {
+        applyImage(file);
       }
     } else {
       setFormData(prev => ({ ...prev, [name]: value }));
     }
   };
 
-
-  // useEffect(() => {
-  //   axios.get('http://localhost:5000/api/categories')
-  //     .then(res => setCategories(res.data))
-  //     .catch(err => {
-  //       console.error('Failed to load categories', err);
-  //       setCategories([]);
-  //     });
-  // }, []);
-
-//   useEffect(() => {
-//   axios.get('http://localhost:5000/api/categories')
-//     .then(res => {
-//       const catArray = Array.isArray(res.data)
-//         ? res.data
-//         : Array.isArray(res.data.categories)
-//         ? res.data.categories
-//         : [];
-//       setCategories(catArray);
-//     })
-//     .catch(err => {
-//       console.error('Failed to load categories', err);
-//       setCategories([]);
-//     });
-// }, []);
-
+  const handleDrop = e => {
+    e.preventDefault();
+    setDragOver(false);
+    const file = e.dataTransfer.files[0];
+    if (file && validateImage(file, null)) {
+      applyImage(file);
+    }
+  };
 
   const handleSubmit = async e => {
-    
     e.preventDefault();
     if (!isAuthenticated()) {
-      setModal({
-        show: true,
-        title: 'Login Required',
-        message: 'Please login first'
-      });
+      setModal({ show: true, title: 'Login Required', message: 'Please login first' });
       return;
     }
 
@@ -282,227 +106,454 @@ function ComplaintForm() {
         data.append('image', formData.image);
       }
       const res = await axios.post(`${API_URL}/api/complaints/add`, data, {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'multipart/form-data'
-        }
+        headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'multipart/form-data' }
       });
 
       if (res && res.data) {
-        setModal({
-          show: true,
-          title: 'Success',
-          message: 'Complaint submitted!'
-        });
-        navigate('/dashboard');
+        setModal({ show: true, title: 'Success', message: 'Complaint submitted successfully!' });
       } else {
-        alert('Server responded but no data returned.');
+        setModal({ show: true, title: 'Error', message: 'Server responded but no data returned.' });
       }
-
     } catch (err) {
       console.error('Submission error:', err);
-      if (err.response) {
-        console.error('Error response from server:', err.response.data);
-      }
-      setModal({
-        show: true,
-        title: 'Error',
-        message: 'Error submitting complaint. See console.'
-      });
+      setModal({ show: true, title: 'Error', message: 'Error submitting complaint. Please try again.' });
     }
   };
 
-  // 🔶 Internal CSS Styles
-  const containerStyle = {
-    maxWidth: '600px',
-     width: '100%',
-    margin: '30px auto',
-    padding: '20px',
-    border: '1px solid #ddd',
-    borderRadius: '10px',
-    boxShadow: '0 0 10px rgba(0,0,0,0.1)',
-    fontFamily: 'Arial, sans-serif',
-    backgroundColor: '#fafafa',
-    boxSizing: 'border-box'
-  };
-
-  const inputStyle = {
-  width: '100%',
-  padding: '12px 15px',
-  marginTop: '10px',
-  marginBottom: '10px',
-  fontSize: '16px',
-  borderRadius: '6px',
-  border: '1px solid #ccc',
-  backgroundColor: '#fff',
-  boxSizing: 'border-box',
-  display: 'block'
-};
-
-
-  const textAreaStyle = {
-    ...inputStyle,
-    height: '100px',
-    resize: 'vertical'
-  };
-
-  const selectStyle = {
-    ...inputStyle
-  };
-
-  const buttonStyle = {
-    width: '100%',
-    padding: '10px',
-    backgroundColor: '#007bff',
-    color: 'white',
-    border: 'none',
-    borderRadius: '5px',
-    fontSize: '16px',
-    marginTop: '10px',
-    cursor: 'pointer'
-  };
-
-  const previewStyle = {
-    width: '200px',
-    maxWidth: '300px',
-    margin: '10px 0',
-    borderRadius: '8px',
-    border: '1px solid #ccc'
-  };
-
   return (
-  <div style={containerStyle}>
-    <h2>Submit a Complaint</h2>
-    <form onSubmit={handleSubmit}>
-      <input
-        type="text"
-        name="title"
-        placeholder="Title"
-        onChange={handleChange}
-        required
-        style={inputStyle}
-      />
+    <div style={s.page}>
+      {/* Back button */}
+      <button onClick={() => navigate('/dashboard')} style={s.backBtn}>← Back to Dashboard</button>
 
-      <textarea
-        name="description"
-        placeholder="Description"
-        onChange={handleChange}
-        style={textAreaStyle}
-      />
-
-      {/* 📍 Place Name */}
-      <input
-        type="text"
-        name="placeName"
-        placeholder="Place Name (e.g. Opposite Laxmi Medical)"
-        value={formData.placeName}
-        onChange={handleChange}
-        required
-        style={inputStyle}
-      />
-
-      {/* 🏘️ Area Name */}
-      <input
-        type="text"
-        name="areaName"
-        placeholder="Area Name (e.g. Hirabag)"
-        value={formData.areaName}
-        onChange={handleChange}
-        required
-        style={inputStyle}
-      />
-
-      {/* 🏙️ City Name */}
-      <input
-        type="text"
-        name="cityName"
-        placeholder="City Name (e.g. Surat)"
-        value={formData.cityName}
-        onChange={handleChange}
-        required
-        style={inputStyle}
-      />
-
-      {/* 📌 Auto Location (readonly) */}
-      <input
-        type="text"
-        name="location"
-        placeholder="Location"
-        value={coordinates.location}
-        readOnly
-        style={inputStyle}
-      />
-
-      {/* 🗂️ Category */}
-      <select name="category" onChange={handleChange} required style={selectStyle} value={formData.category}>
-        <option value="">Select Category</option>
-        {categories.map(cat => (
-          <option key={cat._id} value={cat.name}>{cat.name}</option>
-        ))}
-      </select>
-
-      {/* 🗓️ Date */}
-      <p style={{ marginTop: '10px' }}>
-        <strong>Date:</strong> {new Date().toLocaleDateString()}
-      </p>
-
-      {/* 📷 Image Upload */}
-      <input type="file" name="image" onChange={handleChange} style={inputStyle} />
-      {preview && <img src={preview} alt="Preview" style={previewStyle} />}
-
-      {/* 🗺️ Map Picker */}
-      <MapPicker
-        onLocationSelect={(lat, lng, locationName) => {
-          setCoordinates({ lat, lng, location: locationName });
-        }}
-      />
-
-      {/* 🚀 Submit */}
-      <button type="submit" style={buttonStyle}>Submit</button>
-    </form>
-    {modal.show && (
-      <div style={{
-        position: 'fixed',
-        top: 0, left: 0, right: 0, bottom: 0,
-        backgroundColor: 'rgba(0,0,0,0.4)',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        zIndex: 999
-      }}>
-        <div style={{
-          backgroundColor: '#fff',
-          padding: '20px',
-          borderRadius: '8px',
-          width: '300px',
-          boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
-          textAlign: 'center'
-        }}>
-          <h3>{modal.title}</h3>
-          <p>{modal.message}</p>
-          <button onClick={() => {
-            setModal({ ...modal, show: false });
-            // Optionally, redirect after success
-            if (modal.title === 'Success') navigate('/dashboard');
-            if (modal.title === 'Login Required') navigate('/login');
-          }} style={{
-            marginTop: '10px',
-            padding: '8px 16px',
-            border: 'none',
-            borderRadius: '5px',
-            background: '#007bff',
-            color: '#fff',
-            cursor: 'pointer'
-          }}>
-            OK
-          </button>
+      <div style={s.container}>
+        {/* Page header */}
+        <div style={s.pageHeader}>
+          <div style={s.pageHeaderIcon}>📝</div>
+          <div>
+            <h2 style={s.pageTitle}>Submit a Complaint</h2>
+            <p style={s.pageSubtitle}>Help improve your community by reporting issues</p>
+          </div>
         </div>
-      </div>
-    )}
-  </div>
-);
 
+        <form onSubmit={handleSubmit}>
+          {/* Section: Complaint Details */}
+          <div style={s.card}>
+            <h3 style={s.cardTitle}>📋 Complaint Details</h3>
+            <div style={s.fieldGroup}>
+              <label style={s.label}>Title <span style={s.req}>*</span></label>
+              <input
+                type="text"
+                name="title"
+                placeholder="Brief title of the issue"
+                onChange={handleChange}
+                required
+                style={s.input}
+              />
+            </div>
+            <div style={s.fieldGroup}>
+              <label style={s.label}>Description</label>
+              <textarea
+                name="description"
+                placeholder="Describe the issue in detail…"
+                onChange={handleChange}
+                style={s.textarea}
+              />
+            </div>
+            <div style={s.fieldGroup}>
+              <label style={s.label}>Category <span style={s.req}>*</span></label>
+              <select name="category" onChange={handleChange} required style={s.select} value={formData.category}>
+                <option value="">Select a category</option>
+                {categories.map(cat => (
+                  <option key={cat._id} value={cat.name}>{cat.name}</option>
+                ))}
+              </select>
+            </div>
+          </div>
+
+          {/* Section: Location */}
+          <div style={s.card}>
+            <h3 style={s.cardTitle}>📍 Location Details</h3>
+            <div className="cc-two-col" style={s.twoCol}>
+              <div style={s.fieldGroup}>
+                <label style={s.label}>Place Name <span style={s.req}>*</span></label>
+                <input
+                  type="text"
+                  name="placeName"
+                  placeholder="e.g. Opposite Laxmi Medical"
+                  value={formData.placeName}
+                  onChange={handleChange}
+                  required
+                  style={s.input}
+                />
+              </div>
+              <div style={s.fieldGroup}>
+                <label style={s.label}>Area Name <span style={s.req}>*</span></label>
+                <input
+                  type="text"
+                  name="areaName"
+                  placeholder="e.g. Hirabag"
+                  value={formData.areaName}
+                  onChange={handleChange}
+                  required
+                  style={s.input}
+                />
+              </div>
+            </div>
+            <div className="cc-two-col" style={s.twoCol}>
+              <div style={s.fieldGroup}>
+                <label style={s.label}>City Name <span style={s.req}>*</span></label>
+                <input
+                  type="text"
+                  name="cityName"
+                  placeholder="e.g. Surat"
+                  value={formData.cityName}
+                  onChange={handleChange}
+                  required
+                  style={s.input}
+                />
+              </div>
+              <div style={s.fieldGroup}>
+                <label style={s.label}>Auto-detected Location</label>
+                <input
+                  type="text"
+                  name="location"
+                  placeholder="Pick on map below"
+                  value={coordinates.location}
+                  readOnly
+                  style={{ ...s.input, backgroundColor: '#f9fafb', color: '#9ca3af' }}
+                />
+              </div>
+            </div>
+
+            {/* Map */}
+            <div style={s.mapCard}>
+              <p style={s.mapHint}>📌 Click on the map to set exact coordinates</p>
+              <MapPicker
+                onLocationSelect={(lat, lng, locationName) => {
+                  setCoordinates({ lat, lng, location: locationName });
+                }}
+              />
+            </div>
+          </div>
+
+          {/* Section: Image Upload */}
+          <div style={s.card}>
+            <h3 style={s.cardTitle}>📷 Upload Image</h3>
+            <div
+              role="button"
+              tabIndex={0}
+              aria-label="Upload image: drag and drop or press Enter to browse"
+              style={{ ...s.dropzone, ...(dragOver ? s.dropzoneActive : {}) }}
+              onDragOver={e => { e.preventDefault(); setDragOver(true); }}
+              onDragLeave={() => setDragOver(false)}
+              onDrop={handleDrop}
+              onKeyDown={e => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault();
+                  document.getElementById('cc-file-input')?.click();
+                }
+              }}
+            >
+              {preview ? (
+                <div style={s.previewWrap}>
+                  <img src={preview} alt="Preview" style={s.previewImg} />
+                  <button
+                    type="button"
+                    style={s.removeImgBtn}
+                    onClick={() => { setPreview(null); setFormData(p => ({ ...p, image: null })); }}
+                  >
+                    ✕ Remove
+                  </button>
+                </div>
+              ) : (
+                <>
+                  <div style={s.dropzoneIcon}>📂</div>
+                  <p style={s.dropzoneText}>Drag &amp; drop an image here, or</p>
+                  <label style={s.browseBtn}>
+                    Browse File
+                    <input id="cc-file-input" type="file" name="image" accept="image/jpeg,image/png" onChange={handleChange} style={{ display: 'none' }} />
+                  </label>
+                  <p style={s.dropzoneHint}>Supports JPG, PNG · Max 5 MB</p>
+                </>
+              )}
+            </div>
+          </div>
+
+          {/* Date info */}
+          <p style={s.dateInfo}>📅 Submission date: {new Date().toLocaleDateString()}</p>
+
+          {/* Submit */}
+          <button type="submit" style={s.submitBtn}>🚀 Submit Complaint</button>
+        </form>
+      </div>
+
+      {/* Modal */}
+      {modal.show && (
+        <div style={s.overlay}>
+          <div style={s.modal}>
+            <div style={{ fontSize: '36px', marginBottom: '8px' }}>
+              {modal.title === 'Success' ? '✅' : modal.title === 'Login Required' ? '🔒' : '❌'}
+            </div>
+            <h3 style={{ margin: '0 0 8px', color: '#1f2937' }}>{modal.title}</h3>
+            <p style={{ margin: '0 0 16px', color: '#6b7280', fontSize: '14px' }}>{modal.message}</p>
+            <button
+              onClick={() => {
+                setModal({ ...modal, show: false });
+                if (modal.title === 'Success') navigate('/dashboard');
+                if (modal.title === 'Login Required') navigate('/login');
+              }}
+              style={s.modalBtn}
+            >
+              OK
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
 }
 
-export default ComplaintForm;
+const s = {
+  page: {
+    minHeight: '100vh',
+    background: 'linear-gradient(135deg, #4f46e5 0%, #7c3aed 50%, #6d28d9 100%)',
+    padding: '24px 16px 40px',
+    fontFamily: "'Segoe UI', system-ui, -apple-system, sans-serif",
+    boxSizing: 'border-box'
+  },
+  backBtn: {
+    background: 'rgba(255,255,255,0.15)',
+    border: '1px solid rgba(255,255,255,0.3)',
+    color: '#fff',
+    borderRadius: '8px',
+    padding: '8px 16px',
+    fontSize: '14px',
+    cursor: 'pointer',
+    marginBottom: '20px',
+    display: 'inline-block'
+  },
+  container: {
+    maxWidth: '680px',
+    margin: '0 auto',
+    width: '100%'
+  },
+  pageHeader: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '16px',
+    marginBottom: '24px'
+  },
+  pageHeaderIcon: {
+    width: '52px',
+    height: '52px',
+    borderRadius: '14px',
+    background: 'rgba(255,255,255,0.2)',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    fontSize: '24px',
+    flexShrink: 0
+  },
+  pageTitle: {
+    margin: '0 0 4px',
+    fontSize: '22px',
+    fontWeight: '700',
+    color: '#fff'
+  },
+  pageSubtitle: {
+    margin: 0,
+    fontSize: '14px',
+    color: 'rgba(255,255,255,0.75)'
+  },
+  card: {
+    backgroundColor: '#fff',
+    borderRadius: '16px',
+    padding: '24px',
+    marginBottom: '20px',
+    boxShadow: '0 4px 20px rgba(0,0,0,0.1)'
+  },
+  cardTitle: {
+    margin: '0 0 20px',
+    fontSize: '15px',
+    fontWeight: '700',
+    color: '#1f2937'
+  },
+  fieldGroup: {
+    marginBottom: '16px'
+  },
+  label: {
+    display: 'block',
+    fontSize: '13px',
+    fontWeight: '600',
+    color: '#374151',
+    marginBottom: '6px'
+  },
+  req: {
+    color: '#ef4444'
+  },
+  input: {
+    width: '100%',
+    padding: '11px 14px',
+    borderRadius: '10px',
+    border: '1.5px solid #e5e7eb',
+    fontSize: '15px',
+    color: '#1f2937',
+    outline: 'none',
+    boxSizing: 'border-box',
+    backgroundColor: '#fff',
+    transition: 'border-color 0.2s'
+  },
+  textarea: {
+    width: '100%',
+    padding: '11px 14px',
+    borderRadius: '10px',
+    border: '1.5px solid #e5e7eb',
+    fontSize: '15px',
+    color: '#1f2937',
+    outline: 'none',
+    boxSizing: 'border-box',
+    backgroundColor: '#fff',
+    height: '110px',
+    resize: 'vertical',
+    fontFamily: 'inherit'
+  },
+  select: {
+    width: '100%',
+    padding: '11px 14px',
+    borderRadius: '10px',
+    border: '1.5px solid #e5e7eb',
+    fontSize: '15px',
+    color: '#1f2937',
+    outline: 'none',
+    boxSizing: 'border-box',
+    backgroundColor: '#fff',
+    cursor: 'pointer'
+  },
+  twoCol: {
+    display: 'grid',
+    gridTemplateColumns: '1fr 1fr',
+    gap: '16px'
+  },
+  mapCard: {
+    borderRadius: '12px',
+    overflow: 'hidden',
+    border: '1.5px solid #e5e7eb',
+    marginTop: '8px'
+  },
+  mapHint: {
+    margin: 0,
+    padding: '10px 14px',
+    fontSize: '13px',
+    color: '#6b7280',
+    backgroundColor: '#f9fafb',
+    borderBottom: '1px solid #e5e7eb'
+  },
+  dropzone: {
+    border: '2px dashed #d1d5db',
+    borderRadius: '12px',
+    padding: '32px',
+    textAlign: 'center',
+    cursor: 'pointer',
+    transition: 'border-color 0.2s, background 0.2s',
+    backgroundColor: '#f9fafb'
+  },
+  dropzoneActive: {
+    borderColor: '#4f46e5',
+    backgroundColor: '#eef2ff'
+  },
+  dropzoneIcon: {
+    fontSize: '36px',
+    marginBottom: '8px'
+  },
+  dropzoneText: {
+    margin: '0 0 12px',
+    fontSize: '14px',
+    color: '#6b7280'
+  },
+  dropzoneHint: {
+    margin: '10px 0 0',
+    fontSize: '12px',
+    color: '#9ca3af'
+  },
+  browseBtn: {
+    display: 'inline-block',
+    padding: '9px 20px',
+    background: 'linear-gradient(135deg, #4f46e5, #7c3aed)',
+    color: '#fff',
+    borderRadius: '8px',
+    fontSize: '14px',
+    fontWeight: '600',
+    cursor: 'pointer'
+  },
+  previewWrap: {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    gap: '12px'
+  },
+  previewImg: {
+    maxWidth: '260px',
+    maxHeight: '180px',
+    borderRadius: '10px',
+    objectFit: 'cover',
+    border: '1px solid #e5e7eb'
+  },
+  removeImgBtn: {
+    padding: '6px 16px',
+    background: '#fee2e2',
+    color: '#dc2626',
+    border: 'none',
+    borderRadius: '8px',
+    fontSize: '13px',
+    fontWeight: '600',
+    cursor: 'pointer'
+  },
+  dateInfo: {
+    color: 'rgba(255,255,255,0.75)',
+    fontSize: '13px',
+    marginBottom: '16px'
+  },
+  submitBtn: {
+    width: '100%',
+    padding: '15px',
+    background: 'rgba(255,255,255,0.15)',
+    backdropFilter: 'blur(10px)',
+    color: '#fff',
+    border: '2px solid rgba(255,255,255,0.4)',
+    borderRadius: '12px',
+    fontSize: '17px',
+    fontWeight: '700',
+    cursor: 'pointer',
+    letterSpacing: '0.3px',
+    boxShadow: '0 4px 20px rgba(0,0,0,0.15)'
+  },
+  overlay: {
+    position: 'fixed',
+    top: 0, left: 0, right: 0, bottom: 0,
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    zIndex: 999
+  },
+  modal: {
+    backgroundColor: '#fff',
+    padding: '28px 32px',
+    borderRadius: '16px',
+    width: '320px',
+    boxShadow: '0 20px 60px rgba(0,0,0,0.2)',
+    textAlign: 'center'
+  },
+  modalBtn: {
+    padding: '10px 32px',
+    border: 'none',
+    borderRadius: '8px',
+    background: 'linear-gradient(135deg, #4f46e5, #7c3aed)',
+    color: '#fff',
+    fontSize: '15px',
+    fontWeight: '600',
+    cursor: 'pointer'
+  }
+};
 
+export default ComplaintForm;
