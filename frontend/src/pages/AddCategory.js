@@ -75,6 +75,7 @@ function AddCategory() {
           Authorization: `Bearer ${getToken()}`
         }
       });
+      
       setMessage('Category added: ' + res.data.name);
       setModal({
   show: true,
@@ -156,7 +157,7 @@ function AddCategory() {
     </div>
   </div>
 )}
-
+ 
     </div>
   );
 }

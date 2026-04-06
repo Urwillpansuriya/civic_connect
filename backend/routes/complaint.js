@@ -67,11 +67,28 @@ router.get('/all', authMiddleware, async (req, res) => {
 });
 
 
-// ✅ Public route to get all complaints (no auth middleware)
+// ✅ Public route to get all complaints with pagination (no auth middleware)
 router.get('/', async (req, res) => {
   try {
-    const complaints = await Complaint.find().populate('user', 'name');
-    res.json(complaints);
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const skip = (page - 1) * limit;
+
+    const [complaints, total] = await Promise.all([
+      Complaint.find()
+        .populate('user', 'name')
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(limit),
+      Complaint.countDocuments()
+    ]);
+
+    res.json({
+      complaints,
+      total,
+      page,
+      totalPages: Math.ceil(total / limit)
+    });
   } catch (err) {
     console.error('Error fetching complaints:', err);
     res.status(500).json({ error: 'Internal server error' });
@@ -196,16 +213,32 @@ router.get('/summary', authMiddleware, async (req, res) => {
 router.get('/search', async (req, res) => {
   try {
     const query = req.query.q || '';
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const skip = (page - 1) * limit;
     const regex = new RegExp(query, 'i'); // Case-insensitive search
 
-    const complaints = await Complaint.find({
+    const searchQuery = {
       $or: [
         { title: regex },
         { location: regex }
       ]
-    });
+    };
 
-    res.json(complaints);
+    const [complaints, total] = await Promise.all([
+      Complaint.find(searchQuery)
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(limit),
+      Complaint.countDocuments(searchQuery)
+    ]);
+
+    res.json({
+      complaints,
+      total,
+      page,
+      totalPages: Math.ceil(total / limit)
+    });
   } catch (err) {
     console.error('Search error:', err);
     res.status(500).json({ error: 'Internal server error' });

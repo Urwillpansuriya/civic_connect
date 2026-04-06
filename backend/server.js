@@ -10,7 +10,7 @@ dotenv.config();
 
 // Init app
 const app = express();
-app.use('/api/categories', categoryRoutes); // ✅ Category route works here
+// Add middleware first
 app.use(cors({
   origin: 'http://localhost:3000', // allow frontend
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
@@ -18,7 +18,9 @@ app.use(cors({
   allowedHeaders: ['Content-Type', 'Authorization']
 }));
 app.use(express.json());
-app.use('/api/comments', commentRoutes); // ✅ Comment route works here
+// Then register routes
+app.use('/api/categories', categoryRoutes); // Category route works here
+app.use('/api/comments', commentRoutes); // Comment route works here
 // Middleware
 // app.use(cors());
 // MongoDB Connection
@@ -37,10 +39,10 @@ app.use('/api/export', require('./routes/export')); // ✅ CSV route works here
 app.use('/uploads', express.static('uploads'));
 
 // Serve React build
-app.use(express.static(path.join(__dirname, '../frontend/build')));
-app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, '../frontend/build', 'index.html'));
-});
+// app.use(express.static(path.join(__dirname, '../frontend/build')));
+// app.get('*', (req, res) => {
+//   res.sendFile(path.join(__dirname, '../frontend/build', 'index.html'));
+// });
 
 // Start Server
 const PORT = process.env.PORT || 5000;

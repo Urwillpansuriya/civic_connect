@@ -199,25 +199,43 @@
 
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom'; // ✅ Import this
+import { useNavigate } from 'react-router-dom';
 
 function PublicDashboard() {
   const [complaints, setComplaints] = useState([]);
-  const navigate = useNavigate(); // ✅ Hook for redirection
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
-    const fetchComplaints = async () => {
-      try {
-        const res = await axios.get('http://localhost:5000/api/complaints');
-        setComplaints(Array.isArray(res.data) ? res.data : []);
-      } catch (err) {
-        console.error('Error fetching complaints:', err);
-        alert('Failed to load complaints');
-      }
-    };
-
     fetchComplaints();
-  }, []);
+  }, [currentPage]);
+
+  const fetchComplaints = async () => {
+    try {
+      setLoading(true);
+      const res = await axios.get(`http://localhost:5000/api/complaints?page=${currentPage}&limit=10`);
+
+      if (res.data.complaints) {
+        setComplaints(res.data.complaints);
+        setTotalPages(res.data.totalPages || 1);
+      } else {
+        setComplaints(Array.isArray(res.data) ? res.data : []);
+      }
+    } catch (err) {
+      console.error('Error fetching complaints:', err);
+      alert('Failed to load complaints');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handlePageChange = (page) => {
+    if (page >= 1 && page <= totalPages) {
+      setCurrentPage(page);
+    }
+  };
 
   const styles = {
     container: {
@@ -282,12 +300,33 @@ function PublicDashboard() {
       color: '#777',
       fontStyle: 'italic',
       marginTop: '20px',
+    },
+    pagination: {
+      display: 'flex',
+      justifyContent: 'center',
+      alignItems: 'center',
+      marginTop: '20px',
+      gap: '10px'
+    },
+    paginationButton: (isDisabled) => ({
+      padding: '8px 16px',
+      backgroundColor: isDisabled ? '#ccc' : '#007bff',
+      color: 'white',
+      border: 'none',
+      borderRadius: '4px',
+      cursor: isDisabled ? 'not-allowed' : 'pointer'
+    }),
+    loading: {
+      textAlign: 'center',
+      margin: '20px 0',
+      fontSize: '16px',
+      color: '#555'
     }
   };
 
   return (
     <div style={styles.container}>
-      {/* 🚀 Register/Login buttons */}
+      {/* Register/Login buttons */}
       <div style={styles.navButtons}>
         <button style={styles.btn} onClick={() => navigate('/login')}>Login</button>
         <button style={styles.btn} onClick={() => navigate('/')}>Register</button>
@@ -295,25 +334,52 @@ function PublicDashboard() {
 
       <h2 style={styles.heading}>🗺️ Public Complaint Dashboard</h2>
 
-      {complaints.length === 0 ? (
-        <p style={styles.noData}>No complaints available.</p>
+      {loading ? (
+        <p style={styles.loading}>Loading complaints...</p>
       ) : (
-        complaints.map(c => (
-          <div key={c._id} style={styles.card}>
-            <h4 style={styles.title}>{c.title}</h4>
-            <p style={styles.paragraph}>{c.description}</p>
-            <p style={styles.paragraph}><span style={styles.label}>User:</span> {c.user?.name || 'Anonymous'}</p>
-            <p style={styles.paragraph}><span style={styles.label}>Location:</span> {c.location}</p>
-            <p style={styles.paragraph}><span style={styles.label}>Status:</span> {c.status}</p>
-            {c.imageUrl && (
-              <img
-                src={`http://localhost:5000/uploads/${c.imageUrl}`}
-                alt="complaint"
-                style={styles.image}
-              />
-            )}
-          </div>
-        ))
+        <>
+          {complaints.length === 0 ? (
+            <p style={styles.noData}>No complaints available.</p>
+          ) : (
+            complaints.map(c => (
+              <div key={c._id} style={styles.card}>
+                <h4 style={styles.title}>{c.title}</h4>
+                <p style={styles.paragraph}>{c.description}</p>
+                <p style={styles.paragraph}><span style={styles.label}>User:</span> {c.user?.name || 'Anonymous'}</p>
+                <p style={styles.paragraph}><span style={styles.label}>Location:</span> {c.location}</p>
+                <p style={styles.paragraph}><span style={styles.label}>Status:</span> {c.status}</p>
+                {c.imageUrl && (
+                  <img
+                    src={`http://localhost:5000/uploads/${c.imageUrl}`}
+                    alt="complaint"
+                    style={styles.image}
+                  />
+                )}
+              </div>
+            ))
+          )}
+
+          {/* Pagination Controls */}
+          {totalPages > 1 && (
+            <div style={styles.pagination}>
+              <button 
+                onClick={() => handlePageChange(currentPage - 1)}
+                disabled={currentPage === 1}
+                style={styles.paginationButton(currentPage === 1)}
+              >
+                Previous
+              </button>
+              <span>Page {currentPage} of {totalPages}</span>
+              <button 
+                onClick={() => handlePageChange(currentPage + 1)}
+                disabled={currentPage === totalPages}
+                style={styles.paginationButton(currentPage === totalPages)}
+              >
+                Next
+              </button>
+            </div>
+          )}
+        </>
       )}
     </div>
   );

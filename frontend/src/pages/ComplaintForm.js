@@ -197,14 +197,31 @@ function ComplaintForm() {
     }
   };
 
+  // useEffect(() => {
+  //   axios.get('http://localhost:5000/api/categories')
+  //     .then(res => setCategories(res.data))
+  //     .catch(err => {
+  //       console.error('Failed to load categories', err);
+  //       setCategories([]);
+  //     });
+  // }, []);
+
   useEffect(() => {
-    axios.get('http://localhost:5000/api/categories')
-      .then(res => setCategories(res.data))
-      .catch(err => {
-        console.error('Failed to load categories', err);
-        setCategories([]);
-      });
-  }, []);
+  axios.get('http://localhost:5000/api/categories')
+    .then(res => {
+      const catArray = Array.isArray(res.data)
+        ? res.data
+        : Array.isArray(res.data.categories)
+        ? res.data.categories
+        : [];
+      setCategories(catArray);
+    })
+    .catch(err => {
+      console.error('Failed to load categories', err);
+      setCategories([]);
+    });
+}, []);
+
 
   const handleSubmit = async e => {
     

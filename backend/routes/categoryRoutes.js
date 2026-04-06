@@ -10,7 +10,7 @@ const isAdmin = require('../middleware/isAdmin'); // Optional if using role-base
 router.post('/add', auth, async (req, res) => {
   try {
     const { name } = req.body;
-    if (!name) return res.status(400).json({ error: 'Category name is required' });
+    if (!name || name.trim() === '') return res.status(400).json({ error: 'Category name is required' });
 
     const existing = await Category.findOne({ name });
     if (existing) return res.status(409).json({ error: 'Category already exists' });
@@ -22,6 +22,15 @@ router.post('/add', auth, async (req, res) => {
   } catch (err) {
     console.error('❌ Category Add Error:', err);
     res.status(500).json({ error: 'Server error' });
+  }
+});
+
+router.get('/', async (req, res) => {
+  try {
+    const categories = await Category.find();
+    res.json(categories);
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to fetch categories' });
   }
 });
 

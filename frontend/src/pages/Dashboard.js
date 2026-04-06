@@ -532,7 +532,7 @@ function Dashboard() {
           })
         ]);
         setUserComplaints(userRes.data);
-        setAllComplaints(allRes.data);
+        setAllComplaints(Array.isArray(allRes.data) ? allRes.data : allRes.data.complaints || []);
       } catch (err) {
         console.error('❌ Fetch error:', err);
       }
