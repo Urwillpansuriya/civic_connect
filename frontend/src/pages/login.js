@@ -25,6 +25,38 @@ function Login() {
     }
   };
 
+  const pageStyle = {
+    minHeight: '100vh',
+    background: 'linear-gradient(135deg, #4c1d95 0%, #6d28d9 50%, #7c3aed 100%)',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: '20px',
+    fontFamily: "'Segoe UI', system-ui, sans-serif",
+  };
+
+  const containerStyle = {
+    width: '100%',
+    maxWidth: '400px',
+    background: '#fff',
+    borderRadius: '16px',
+    padding: '36px 32px',
+    boxShadow: '0 20px 60px rgba(0,0,0,0.25)',
+    textAlign: 'center',
+  };
+
+  const inputStyle = {
+    width: '100%',
+    padding: '12px 14px',
+    margin: '8px 0',
+    borderRadius: '8px',
+    border: '1.5px solid #ddd',
+    fontSize: '15px',
+    backgroundColor: '#fff',
+    color: '#1e1b4b',
+    boxSizing: 'border-box',
+    outline: 'none',
+  };
   return (
     <div style={styles.page}>
       <div style={styles.card}>
@@ -109,6 +141,70 @@ const styles = {
     borderRadius: '20px',
     boxShadow: '0 20px 60px rgba(0,0,0,0.25)',
     width: '100%',
+    padding: '12px',
+    margin: '8px 0',
+    background: 'linear-gradient(90deg, #6d28d9, #7c3aed)',
+    color: '#fff',
+    border: 'none',
+    borderRadius: '8px',
+    fontSize: '15px',
+    fontWeight: '600',
+    cursor: 'pointer',
+  };
+
+  const secondaryButtonStyle = {
+    ...buttonStyle,
+    background: '#6b7280',
+  };
+
+  const headingStyle = {
+    marginBottom: '6px',
+    fontSize: '24px',
+    color: '#1e1b4b',
+    fontWeight: '700',
+  };
+
+  const infoTextStyle = {
+    fontSize: '13px',
+    marginTop: '12px',
+    color: '#6b7280',
+  };
+
+  return (
+    <div style={pageStyle}>
+    <div style={containerStyle}>
+      <div style={{ fontSize: '40px', marginBottom: '8px' }}>🏛️</div>
+      <h2 style={headingStyle}>Welcome Back</h2>
+      <p style={{ color: '#9ca3af', fontSize: '14px', margin: '0 0 20px' }}>
+        Sign in to CivicConnect
+      </p>
+      <form onSubmit={handleLogin}>
+        <input
+          type="email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          placeholder="Email address"
+          required
+          style={inputStyle}
+        />
+        <input
+          type="password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          placeholder="Password"
+          required
+          style={inputStyle}
+        />
+        <button type="submit" style={buttonStyle}>Login</button>
+      </form>
+
+      <p style={infoTextStyle}>Don't have an account?</p>
+      <button onClick={() => navigate('/')} style={secondaryButtonStyle}>Register</button>
+
+      <p style={infoTextStyle}>Are you an admin?</p>
+      <button onClick={() => navigate('/admin-login')} style={secondaryButtonStyle}>Admin Login</button>
+    {modal.show && (
+  <div style={{
     maxWidth: '440px',
     overflow: 'hidden'
   },
@@ -234,6 +330,37 @@ const styles = {
     alignItems: 'center',
     justifyContent: 'center',
     zIndex: 999
+  }}>
+    <div style={{
+      backgroundColor: '#fff',
+      padding: '20px',
+      borderRadius: '8px',
+      width: '300px',
+      boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
+      textAlign: 'center'
+    }}>
+      <h3>{modal.title}</h3>
+      <p>{modal.message}</p>
+      <button onClick={() => setModal({ ...modal, show: false })} style={{
+        marginTop: '10px',
+        padding: '8px 16px',
+        border: 'none',
+        borderRadius: '5px',
+        background: '#6d28d9',
+        color: '#fff',
+        cursor: 'pointer'
+      }}>
+        OK
+      </button>
+    </div>
+  </div>
+)}
+
+    </div>
+    </div>
+    
+  );
+}
   },
   modal: {
     backgroundColor: '#fff',
