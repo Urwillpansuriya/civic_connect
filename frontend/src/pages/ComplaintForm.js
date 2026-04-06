@@ -182,6 +182,23 @@ function ComplaintForm() {
     title: '',
     message: ''
   });
+
+  useEffect(() => {
+    axios.get(`${API_URL}/api/categories`)
+      .then(res => {
+        const catArray = Array.isArray(res.data)
+          ? res.data
+          : Array.isArray(res.data.categories)
+          ? res.data.categories
+          : [];
+        setCategories(catArray);
+      })
+      .catch(err => {
+        console.error('Failed to load categories', err);
+        setCategories([]);
+      });
+  }, []);
+
   const handleChange = e => {
     const { name, value, files } = e.target;
 
@@ -281,24 +298,6 @@ function ComplaintForm() {
       });
     }
   };
-  <style>
-{`
-  @media (max-width: 600px) {
-    input, textarea, select, button {
-      font-size: 15px !important;
-    }
-
-    input[type="file"] {
-      font-size: 13px !important;
-    }
-
-    img {
-      max-width: 100% !important;
-      height: auto !important;
-    }
-  }
-`}
-</style>
 
   // 🔶 Internal CSS Styles
   const containerStyle = {
