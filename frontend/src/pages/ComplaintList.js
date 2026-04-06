@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { getToken, isAuthenticated } from '../utils/auth';
-
+const API_URL = "https://civic-connect-hams.onrender.com";
 function ComplaintList() {
   const [complaints, setComplaints] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
@@ -27,7 +27,7 @@ function ComplaintList() {
   const fetchData = async (page) => {
     try {
       setLoading(true);
-      const res = await axios.get(`http://localhost:5000/api/complaints/all?page=${page}&limit=10`, {
+      const res = await axios.get(`${API_URL}/api/complaints/all?page=${page}&limit=10`, {
         headers: {
           Authorization: `Bearer ${getToken()}`
         }
@@ -53,7 +53,7 @@ function ComplaintList() {
 
   const handleUpvote = async (id) => {
     try {
-      await axios.post(`http://localhost:5000/api/complaints/${id}/upvote`, {}, {
+      await axios.post(`${API_URL}/api/complaints/${id}/upvote`, {}, {
         headers: { Authorization: `Bearer ${getToken()}` }
       });
       fetchData(currentPage); // Refresh complaints on current page after upvote
@@ -83,7 +83,7 @@ function ComplaintList() {
               <p><strong>Status:</strong> {c.status}</p>
               {c.imageUrl && (
                 <img
-                  src={`http://localhost:5000/uploads/${c.imageUrl}`}
+                  src={`${API_URL}/uploads/${c.imageUrl}`}
                   alt="Complaint"
                   style={{ width: '200px', marginTop: '10px' }}
                 />

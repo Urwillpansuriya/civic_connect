@@ -3,7 +3,7 @@ import axios from 'axios';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import { HeatmapLayer } from 'react-leaflet-heatmap-layer-v3';
 import L from 'leaflet';
-
+const API_URL = "https://civic-connect-hams.onrender.com";
 // 📍 Marker icon config
 const markerIcon = new L.Icon({
   iconUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon.png',
@@ -15,7 +15,7 @@ function PublicMap() {
   const [complaints, setComplaints] = useState([]);
 
   useEffect(() => {
-    axios.get('http://localhost:5000/api/complaints/all')
+    axios.get(`${API_URL}/api/complaints/all`)
       .then(res => setComplaints(res.data))
       .catch(err => console.error('Error loading complaints:', err));
   }, []);

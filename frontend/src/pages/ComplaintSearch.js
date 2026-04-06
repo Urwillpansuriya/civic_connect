@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-
+const API_URL = "https://civic-connect-hams.onrender.com";
 function ComplaintSearch() {
   const [query, setQuery] = useState('');
   const [results, setResults] = useState([]);
@@ -14,7 +14,7 @@ function ComplaintSearch() {
     if (!query.trim()) return;
 
     try {
-      const res = await axios.get(`http://localhost:5000/api/complaints/search?q=${query}`);
+      const res = await axios.get(`${API_URL}/api/complaints/search?q=${query}`);
       // Handle both array and object with complaints property
       const complaintsData = res.data.complaints || res.data;
       setResults(Array.isArray(complaintsData) ? complaintsData : []);

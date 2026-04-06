@@ -4,7 +4,7 @@ import { getToken, isAuthenticated } from '../utils/auth';
 import axios from 'axios';
 import LikeButton from '../components/LikeButton';
 import CommentSection from '../components/CommentSection';
-
+const API_URL = "https://civic-connect-hams.onrender.com";
 function Dashboard() {
   const [user, setUser] = useState({ name: '', email: '', location: '' });
   const [userComplaints, setUserComplaints] = useState([]);
@@ -25,10 +25,10 @@ function Dashboard() {
     const fetchData = async () => {
       try {
         const [userRes, allRes] = await Promise.all([
-          axios.get('http://localhost:5000/api/complaints/mine', {
+          axios.get(`${API_URL}/api/complaints/mine`, {
             headers: { Authorization: `Bearer ${getToken()}` }
           }),
-          axios.get('http://localhost:5000/api/complaints/all', {
+          axios.get(`${API_URL}/api/complaints/all`, {
             headers: { Authorization: `Bearer ${getToken()}` }
           })
         ]);
@@ -94,7 +94,7 @@ function Dashboard() {
           <p><strong>Status:</strong> <span className={`status-badge ${c.status}`}>{c.status}</span></p>
           <p><strong>Date:</strong> {new Date(c.createdAt).toLocaleDateString()}</p>
           {c.imageUrl && (
-            <img src={`http://localhost:5000/uploads/${c.imageUrl}`} alt="complaint" style={imageStyle} />
+            <img src={`${API_URL}/uploads/${c.imageUrl}`} alt="complaint" style={imageStyle} />
           )}
           <LikeButton complaintId={c._id} initialLikes={c.likes || 0} />
         </div>
@@ -133,7 +133,7 @@ function Dashboard() {
             <p><strong>Location:</strong> {c.location}</p>
             <p><strong>Status:</strong> {c.status}</p>
             {c.imageUrl && (
-              <img src={`http://localhost:5000/uploads/${c.imageUrl}`} alt="complaint" style={imageStyle} />
+              <img src={`${API_URL}/uploads/${c.imageUrl}`} alt="complaint" style={imageStyle} />
             )}
             <br></br>
             <LikeButton complaintId={c._id} />

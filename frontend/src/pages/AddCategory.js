@@ -56,7 +56,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { getToken } from '../utils/auth';
-
+const API_URL = "https://civic-connect-hams.onrender.com";
 function AddCategory() {
   const [name, setName] = useState('');
   const [message, setMessage] = useState('');
@@ -70,7 +70,7 @@ function AddCategory() {
   const handleSubmit = async e => {
     e.preventDefault();
     try {
-      const res = await axios.post('http://localhost:5000/api/categories/add', { name }, {
+      const res = await axios.post(`${API_URL}/api/categories/add`, { name }, {
         headers: {
           Authorization: `Bearer ${getToken()}`
         }

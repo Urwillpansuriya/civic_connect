@@ -159,7 +159,7 @@ import { useNavigate } from 'react-router-dom';
 import { getToken, isAuthenticated } from '../utils/auth';
 import MapPicker from '../components/MapPicker';
 import 'leaflet/dist/leaflet.css';
-
+const API_URL = "https://civic-connect-hams.onrender.com";
 
 function ComplaintForm() {
   const navigate = useNavigate();
@@ -251,7 +251,7 @@ function ComplaintForm() {
       if (formData.image) {
         data.append('image', formData.image);
       }
-      const res = await axios.post('http://localhost:5000/api/complaints/add',  data, {
+      const res = await axios.post(`${API_URL}/api/complaints/add`, data, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'multipart/form-data'

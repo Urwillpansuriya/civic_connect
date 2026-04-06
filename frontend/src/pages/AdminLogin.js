@@ -51,7 +51,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-
+const API_URL = "https://civic-connect-hams.onrender.com";
 function AdminLogin() {
   const [form, setForm] = useState({ email: '', password: '' });
   const navigate = useNavigate();
@@ -68,7 +68,7 @@ function AdminLogin() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await axios.post('http://localhost:5000/api/auth/login', form);
+      const res = await axios.post(`${API_URL}/api/auth/login`, form);
       if (res.data.user.role !== 'admin') {
         setModal({
           show: true,

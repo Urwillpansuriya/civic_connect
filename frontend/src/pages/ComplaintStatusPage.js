@@ -4,7 +4,7 @@ import axios from 'axios';
 import { getToken } from '../utils/auth';
 import Modal from '../components/Modal';
 import CommentSection from '../components/CommentSection';
-
+const API_URL = "https://civic-connect-hams.onrender.com";
 function ComplaintStatusPage() {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -17,7 +17,7 @@ function ComplaintStatusPage() {
   });
 
   useEffect(() => {
-    axios.get(`http://localhost:5000/api/complaints/${id}`, {
+    axios.get(`${API_URL}/api/complaints/${id}`, {
       headers: { Authorization: `Bearer ${getToken()}` }
     }).then(res => {
       console.log('Complaint API response:', res.data);
@@ -28,7 +28,7 @@ function ComplaintStatusPage() {
 
   const updateStatus = async (newStatus) => {
     try {
-      await axios.patch(`http://localhost:5000/api/complaints/${id}/status`, { status: newStatus }, {
+      await axios.patch(`${API_URL}/api/complaints/${id}/status`, { status: newStatus }, {
         headers: { Authorization: `Bearer ${getToken()}` }
       });
       setStatus(newStatus);
@@ -61,7 +61,7 @@ function ComplaintStatusPage() {
       <p><strong>Date:</strong> {new Date(complaint.createdAt).toLocaleDateString()}</p>
       <p><strong>Likes:</strong> {complaint.likes ? complaint.likes.length : 0}</p>
       {complaint.imageUrl && (
-        <img src={`http://localhost:5000/uploads/${complaint.imageUrl}`} alt="complaint" style={{ width: '300px', marginTop: '10px', borderRadius: '6px' }} />
+        <img src={`${API_URL}/uploads/${complaint.imageUrl}`} alt="complaint" style={{ width: '300px', marginTop: '10px', borderRadius: '6px' }} />
       )}
       
       <div style={{ marginTop: '20px', borderTop: '1px solid #ddd', paddingTop: '20px' }}>

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
 import CommentSection from '../components/CommentSection';
-
+const API_URL = "https://civic-connect-hams.onrender.com";
 function ComplaintDetail() {
   const { id } = useParams(); // Get complaint ID from URL
   const [complaint, setComplaint] = useState(null);
@@ -10,7 +10,7 @@ function ComplaintDetail() {
   useEffect(() => {
     const fetchComplaint = async () => {
       try {
-        const res = await axios.get(`http://localhost:5000/api/complaints/${id}`);
+        const res = await axios.get(`${API_URL}/api/complaints/${id}`);
         setComplaint(res.data);
       } catch (err) {
         console.error('Error loading complaint:', err);

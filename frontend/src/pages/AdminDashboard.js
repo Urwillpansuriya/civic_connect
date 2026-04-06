@@ -248,7 +248,7 @@ import AddCategory from './AddCategory';
 import UserLoginGraph from '../components/UserLoginGraph';
 import CommentSection from '../components/CommentSection';
 import Modal from '../components/Modal';
-
+const API_URL = "https://civic-connect-hams.onrender.com";
 function AdminDashboard() {
   const [complaints, setComplaints] = useState([]);
   const [summary, setSummary] = useState(null);
@@ -266,7 +266,7 @@ function AdminDashboard() {
 
   const fetchData = async (page) => {
     try {
-      const res = await axios.get(`http://localhost:5000/api/complaints/all?page=${page}&limit=5`, {
+      const res = await axios.get(`${API_URL}/api/complaints/all?page=${page}&limit=5`, {
         headers: { Authorization: `Bearer ${getToken()}` }
       });
       
@@ -294,7 +294,7 @@ function AdminDashboard() {
   const handleDeleteComplaint = async (id) => {
     if (window.confirm('Are you sure you want to delete this complaint? This action cannot be undone.')) {
       try {
-        await axios.delete(`http://localhost:5000/api/complaints/${id}`, {
+        await axios.delete(`${API_URL}/api/complaints/${id}`, {
           headers: { Authorization: `Bearer ${getToken()}` }
         });
         

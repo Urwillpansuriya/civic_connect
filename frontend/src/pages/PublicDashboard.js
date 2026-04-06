@@ -207,7 +207,7 @@ function PublicDashboard() {
   const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-
+  const API_URL = "https://civic-connect-hams.onrender.com";
   useEffect(() => {
     fetchComplaints();
   }, [currentPage]);
@@ -215,7 +215,7 @@ function PublicDashboard() {
   const fetchComplaints = async () => {
     try {
       setLoading(true);
-      const res = await axios.get(`http://localhost:5000/api/complaints?page=${currentPage}&limit=10`);
+      const res = await axios.get(`${API_URL}/api/complaints?page=${currentPage}&limit=10`);
 
       if (res.data.complaints) {
         setComplaints(res.data.complaints);
@@ -350,7 +350,7 @@ function PublicDashboard() {
                 <p style={styles.paragraph}><span style={styles.label}>Status:</span> {c.status}</p>
                 {c.imageUrl && (
                   <img
-                    src={`http://localhost:5000/uploads/${c.imageUrl}`}
+                    src={`${API_URL}/uploads/${c.imageUrl}`}
                     alt="complaint"
                     style={styles.image}
                   />

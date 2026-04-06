@@ -2,13 +2,13 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useParams } from 'react-router-dom';
 import { getToken } from '../utils/auth';
-
+const API_URL = "https://civic-connect-hams.onrender.com";
 function ComplaintDetailPage() {
   const { id } = useParams();
   const [complaint, setComplaint] = useState(null);
 
   useEffect(() => {
-    axios.get(`http://localhost:5000/api/complaints/${id}`, {
+    axios.get(`${API_URL}/api/complaints/${id}`, {
       headers: { Authorization: `Bearer ${getToken()}` }
     }).then(res => setComplaint(res.data));
   }, [id]);
@@ -25,7 +25,7 @@ function ComplaintDetailPage() {
       <p><strong>Date:</strong> {new Date(complaint.createdAt).toLocaleString()}</p>
       {complaint.image && (
         <img
-          src={`http://localhost:5000/uploads/${complaint.image}`}
+          src={`${API_URL}/uploads/${complaint.image}`}
           alt="Complaint"
           style={{ width: '300px', marginTop: '20px' }}
         />

@@ -47,7 +47,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-
+const API_URL = "https://civic-connect-hams.onrender.com";
 
 function Register() {
   const [modal, setModal] = useState({
@@ -87,7 +87,7 @@ function Register() {
 const handleSubmit = async e => {
   e.preventDefault();
   try {
-    const res = await axios.post('http://localhost:5000/api/auth/register', formData);
+    const res = await axios.post(`${API_URL}/api/auth/register`, formData);
     
     if (res.status === 201) { // Check if registration is successful
       localStorage.setItem('token', res.data.token);
