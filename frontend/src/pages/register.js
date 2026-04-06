@@ -119,7 +119,9 @@ const handleSubmit = async e => {
   return (
     <div style={styles.container}>
       <div style={styles.formBox}>
+        <div style={{ fontSize: '40px', marginBottom: '8px' }}>🏛️</div>
         <h2 style={styles.heading}>Create an Account</h2>
+        <p style={{ color: '#9ca3af', fontSize: '14px', margin: '0 0 4px' }}>Join CivicConnect today</p>
         <form onSubmit={handleSubmit} style={styles.form}>
           <input
             name="name"
@@ -186,7 +188,7 @@ const handleSubmit = async e => {
         padding: '8px 16px',
         border: 'none',
         borderRadius: '5px',
-        background: '#007bff',
+        background: '#6d28d9',
         color: '#fff',
         cursor: 'pointer'
       }}>
@@ -202,62 +204,73 @@ const handleSubmit = async e => {
 
 const styles = {
   container: {
-    backgroundColor: '#f3f4f6',
-    height: '100vh',
+    minHeight: '100vh',
+    background: 'linear-gradient(135deg, #4c1d95 0%, #6d28d9 50%, #7c3aed 100%)',
     display: 'flex',
     alignItems: 'center',
-    justifyContent: 'center'
+    justifyContent: 'center',
+    padding: '20px',
+    fontFamily: "'Segoe UI', system-ui, sans-serif",
   },
   formBox: {
     backgroundColor: 'white',
-    padding: '30px 40px',
-    borderRadius: '10px',
-    boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+    padding: '36px 32px',
+    borderRadius: '16px',
+    boxShadow: '0 20px 60px rgba(0,0,0,0.25)',
     width: '100%',
-    maxWidth: '400px'
+    maxWidth: '400px',
+    textAlign: 'center',
   },
   heading: {
     textAlign: 'center',
-    marginBottom: '25px',
-    color: '#1f2937'
+    marginBottom: '4px',
+    color: '#1e1b4b',
+    fontSize: '24px',
+    fontWeight: '700',
   },
   form: {
     display: 'flex',
-    flexDirection: 'column'
+    flexDirection: 'column',
+    marginTop: '16px',
   },
   input: {
-    padding: '10px',
-    marginBottom: '15px',
-    borderRadius: '5px',
-    border: '1px solid #ccc',
-    fontSize: '16px'
+    padding: '12px 14px',
+    marginBottom: '12px',
+    borderRadius: '8px',
+    border: '1.5px solid #ddd',
+    fontSize: '15px',
+    color: '#1e1b4b',
+    outline: 'none',
   },
   submitButton: {
     padding: '12px',
-    backgroundColor: '#2563eb',
+    background: 'linear-gradient(90deg, #6d28d9, #7c3aed)',
     color: 'white',
     border: 'none',
-    borderRadius: '5px',
-    fontWeight: 'bold',
-    fontSize: '16px',
-    cursor: 'pointer'
+    borderRadius: '8px',
+    fontWeight: '600',
+    fontSize: '15px',
+    cursor: 'pointer',
+    marginTop: '4px',
   },
   footerText: {
-    marginTop: '15px',
-    fontSize: '14px',
+    marginTop: '14px',
+    fontSize: '13px',
     textAlign: 'center',
-    color: '#555'
+    color: '#6b7280',
   },
   loginButton: {
-    marginTop: '10px',
+    marginTop: '6px',
     width: '100%',
-    padding: '10px',
+    padding: '11px',
     backgroundColor: '#6b7280',
     color: 'white',
     border: 'none',
-    borderRadius: '5px',
-    cursor: 'pointer'
-  }
+    borderRadius: '8px',
+    cursor: 'pointer',
+    fontSize: '15px',
+    fontWeight: '500',
+  },
 };
 
 export default Register;

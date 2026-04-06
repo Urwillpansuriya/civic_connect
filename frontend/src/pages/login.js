@@ -151,74 +151,84 @@ function Login() {
     }
   };
 
-  // ✨ Internal CSS
+  const pageStyle = {
+    minHeight: '100vh',
+    background: 'linear-gradient(135deg, #4c1d95 0%, #6d28d9 50%, #7c3aed 100%)',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: '20px',
+    fontFamily: "'Segoe UI', system-ui, sans-serif",
+  };
+
   const containerStyle = {
+    width: '100%',
     maxWidth: '400px',
-    margin: '60px auto',
-    padding: '35px',
-    border: '1px solid #ddd',
-    borderRadius: '12px',
-    boxShadow: '0 8px 18px rgba(0, 0, 0, 0.06)',
-    backgroundColor: '#fff',
-    fontFamily: 'Segoe UI, sans-serif',
-    textAlign: 'center'
+    background: '#fff',
+    borderRadius: '16px',
+    padding: '36px 32px',
+    boxShadow: '0 20px 60px rgba(0,0,0,0.25)',
+    textAlign: 'center',
   };
 
   const inputStyle = {
-  width: '100%',
-  padding: '12px 14px',
-  margin: '10px 0',
-  borderRadius: '6px',
-  border: '1px solid #ccc',
-  fontSize: '15px',
-  backgroundColor: '#fff',         // ✅ White background
-  color: '#333',
-  boxSizing: 'border-box',
-  outline: 'none',
-  transition: 'border-color 0.2s ease-in-out'
-};
-
+    width: '100%',
+    padding: '12px 14px',
+    margin: '8px 0',
+    borderRadius: '8px',
+    border: '1.5px solid #ddd',
+    fontSize: '15px',
+    backgroundColor: '#fff',
+    color: '#1e1b4b',
+    boxSizing: 'border-box',
+    outline: 'none',
+  };
 
   const buttonStyle = {
     width: '100%',
     padding: '12px',
-    margin: '10px 0',
-    backgroundColor: '#007bff',
+    margin: '8px 0',
+    background: 'linear-gradient(90deg, #6d28d9, #7c3aed)',
     color: '#fff',
     border: 'none',
-    borderRadius: '6px',
-    fontSize: '16px',
-    fontWeight: 'bold',
-    cursor: 'pointer'
+    borderRadius: '8px',
+    fontSize: '15px',
+    fontWeight: '600',
+    cursor: 'pointer',
   };
 
   const secondaryButtonStyle = {
     ...buttonStyle,
-    backgroundColor: '#6c757d'
+    background: '#6b7280',
   };
 
   const headingStyle = {
-    marginBottom: '25px',
+    marginBottom: '6px',
     fontSize: '24px',
-    color: '#333',
-    fontWeight: '600'
+    color: '#1e1b4b',
+    fontWeight: '700',
   };
 
   const infoTextStyle = {
-    fontSize: '14px',
-    marginTop: '10px',
-    color: '#555'
+    fontSize: '13px',
+    marginTop: '12px',
+    color: '#6b7280',
   };
 
   return (
+    <div style={pageStyle}>
     <div style={containerStyle}>
-      <h2 style={headingStyle}>User Login</h2>
+      <div style={{ fontSize: '40px', marginBottom: '8px' }}>🏛️</div>
+      <h2 style={headingStyle}>Welcome Back</h2>
+      <p style={{ color: '#9ca3af', fontSize: '14px', margin: '0 0 20px' }}>
+        Sign in to CivicConnect
+      </p>
       <form onSubmit={handleLogin}>
         <input
           type="email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          placeholder="Email"
+          placeholder="Email address"
           required
           style={inputStyle}
         />
@@ -263,7 +273,7 @@ function Login() {
         padding: '8px 16px',
         border: 'none',
         borderRadius: '5px',
-        background: '#007bff',
+        background: '#6d28d9',
         color: '#fff',
         cursor: 'pointer'
       }}>
@@ -273,6 +283,7 @@ function Login() {
   </div>
 )}
 
+    </div>
     </div>
     
   );

@@ -1,165 +1,13 @@
-// import React, { useState } from 'react';
-// import axios from 'axios';
-// import { useNavigate } from 'react-router-dom';
-// import { getToken, isAuthenticated } from '../utils/auth';
-// import MapPicker from '../components/MapPicker';
-// import 'leaflet/dist/leaflet.css';
-
-// function ComplaintForm() {
-//   const navigate = useNavigate();
-
-//   const [formData, setFormData] = useState({
-//     title: '',
-//     description: '',
-//     category: '',
-//     image: null
-//   });
-
-//   const [preview, setPreview] = useState(null);
-//   const [coordinates, setCoordinates] = useState({ lat: '', lng: '', location: '' });
-
-//   const handleChange = e => {
-//     const { name, value, files } = e.target;
-
-//     if (name === 'image') {
-//       const file = files[0];
-//       setFormData({ ...formData, image: file });
-
-//       const reader = new FileReader();
-//       reader.onloadend = () => setPreview(reader.result);
-//       reader.readAsDataURL(file);
-//     } else {
-//       setFormData({ ...formData, [name]: value });
-//     }
-//   };
-
-// const handleSubmit = async e => {
-//   e.preventDefault();
-
-//   if (!isAuthenticated()) {
-//     alert('Please login first');
-//     navigate('/login');
-//     return;
-//   }
-
-//   try {
-//     const token = getToken();
-//     const data = new FormData();
-//     data.append('title', formData.title);
-//     data.append('description', formData.description);
-//     data.append('location', coordinates.location || 'Unknown');
-//     data.append('category', formData.category);
-//     data.append('lat', coordinates.lat);
-//     data.append('lng', coordinates.lng);
-//     if (formData.image) {
-//       data.append('image', formData.image);
-//     }
-
-//     // 🐞 LOGGING for Debug
-//     console.log("Submitting complaint with data:", {
-//       title: formData.title,
-//       description: formData.description,
-//       category: formData.category,
-//       lat: coordinates.lat,
-//       lng: coordinates.lng,
-//       location: coordinates.location,
-//       image: formData.image,
-//     });
-//     console.log('🚀 FormData before submit:', Object.fromEntries(data.entries()));
-//     // ✅ Save response properly
-//     const res = await axios.post('http://localhost:5000/api/complaints/add', data, {
-//       headers: {
-//         'Authorization': `Bearer ${token}`,
-//         'Content-Type': 'multipart/form-data'
-//       }
-//     });
-
-//     // ✅ Safe access
-//     if (res && res.data) {
-//       alert('Complaint submitted!');
-//       navigate('/dashboard');
-//     } else {
-//       alert('Server responded but no data returned.');
-//       console.warn('Response:', res);
-//     }
-
-//   } catch (err) {
-//     // 🐞 Show EXACT error
-//     console.error('Submission error:', err);
-//     if (err.response) {
-//       console.error('Error response from server:', err.response.data);
-//     }
-//     alert('Error submitting complaint. See console.');
-//   }
-// };
-
-//   return (
-//     <div>
-//       <h2>Submit a Complaint</h2>
-//       <form onSubmit={handleSubmit}>
-
-//         <input
-//           type="text"
-//           name="title"
-//           placeholder="Title"
-//           onChange={handleChange}
-//           required
-//         /><br />
-
-//         <textarea
-//           name="description"
-//           placeholder="Description"
-//           onChange={handleChange}
-//         /><br />
-
-//         <input
-//           type="text"
-//           name="location"
-//           placeholder="Location"
-//           value={coordinates.location}
-//           readOnly
-//         /><br />
-
-//         <select name="category" onChange={handleChange} required>
-//           <option value="">Select Category</option>
-//           <option value="Road">Road</option>
-//           <option value="Drainage">Drainage</option>
-//           <option value="Garbage">Garbage</option>
-//           <option value="Electricity">Electricity</option>
-//           <option value="Other">Other</option>
-//         </select><br />
-
-//         <p>Date: {new Date().toLocaleDateString()}</p>
-
-//         <input type="file" name="image" onChange={handleChange} /><br />
-//         {preview && <img src={preview} alt="Preview" style={{ width: '200px', margin: '10px 0' }} />}
-
-//         <MapPicker
-//           onLocationSelect={(lat, lng, locationName) => {
-//             console.log('Map selected:', lat, lng, locationName);
-//             setCoordinates({ lat, lng, location: locationName });
-//           }}
-//         />
-
-//         <button type="submit">Submit</button>
-//       </form>
-//     </div>
-//   );
-// }
-
-// export default ComplaintForm;
-
-
-
-
-
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { getToken, isAuthenticated } from '../utils/auth';
 import MapPicker from '../components/MapPicker';
+import Layout from '../components/Layout';
 import 'leaflet/dist/leaflet.css';
-const API_URL = process.env.REACT_APP_API_URL || "https://civic-connect-hams.onrender.com";
+import '../components/Layout.css';
+
+const API_URL = process.env.REACT_APP_API_URL || 'https://civic-connect-hams.onrender.com';
 
 function ComplaintForm() {
   const navigate = useNavigate();
@@ -170,22 +18,20 @@ function ComplaintForm() {
     category: '',
     image: null,
     placeName: '',
-   areaName: '',
-   cityName: ''
+    areaName: '',
+    cityName: '',
   });
 
   const [preview, setPreview] = useState(null);
   const [coordinates, setCoordinates] = useState({ lat: '', lng: '', location: '' });
   const [categories, setCategories] = useState([]);
-  const [modal, setModal] = useState({
-    show: false,
-    title: '',
-    message: ''
-  });
+  const [modal, setModal] = useState({ show: false, title: '', message: '' });
+  const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
-    axios.get(`${API_URL}/api/categories`)
-      .then(res => {
+    axios
+      .get(`${API_URL}/api/categories`)
+      .then((res) => {
         const catArray = Array.isArray(res.data)
           ? res.data
           : Array.isArray(res.data.categories)
@@ -193,79 +39,44 @@ function ComplaintForm() {
           : [];
         setCategories(catArray);
       })
-      .catch(err => {
+      .catch((err) => {
         console.error('Failed to load categories', err);
         setCategories([]);
       });
   }, []);
 
-  const handleChange = e => {
+  const handleChange = (e) => {
     const { name, value, files } = e.target;
-
     if (name === 'image') {
       const file = files[0];
       if (file) {
-        // Client-side validation: type (MIME types for jpg/jpeg/png)
         if (!file.type.match(/^image\/(jpeg|png)$/)) {
           setModal({ show: true, title: 'Invalid File', message: 'Only jpg, jpeg and png images are allowed.' });
           e.target.value = '';
           return;
         }
-        // Client-side validation: size (5 MB)
         if (file.size > 5 * 1024 * 1024) {
           setModal({ show: true, title: 'File Too Large', message: 'Image must be smaller than 5 MB.' });
           e.target.value = '';
           return;
         }
-        setFormData(prev => ({ ...prev, image: file }));
+        setFormData((prev) => ({ ...prev, image: file }));
         const reader = new FileReader();
         reader.onloadend = () => setPreview(reader.result);
         reader.readAsDataURL(file);
       }
     } else {
-      setFormData(prev => ({ ...prev, [name]: value }));
+      setFormData((prev) => ({ ...prev, [name]: value }));
     }
   };
 
-
-  // useEffect(() => {
-  //   axios.get('http://localhost:5000/api/categories')
-  //     .then(res => setCategories(res.data))
-  //     .catch(err => {
-  //       console.error('Failed to load categories', err);
-  //       setCategories([]);
-  //     });
-  // }, []);
-
-//   useEffect(() => {
-//   axios.get('http://localhost:5000/api/categories')
-//     .then(res => {
-//       const catArray = Array.isArray(res.data)
-//         ? res.data
-//         : Array.isArray(res.data.categories)
-//         ? res.data.categories
-//         : [];
-//       setCategories(catArray);
-//     })
-//     .catch(err => {
-//       console.error('Failed to load categories', err);
-//       setCategories([]);
-//     });
-// }, []);
-
-
-  const handleSubmit = async e => {
-    
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!isAuthenticated()) {
-      setModal({
-        show: true,
-        title: 'Login Required',
-        message: 'Please login first'
-      });
+      setModal({ show: true, title: 'Login Required', message: 'Please login first' });
       return;
     }
-
+    setSubmitting(true);
     try {
       const token = getToken();
       const data = new FormData();
@@ -278,231 +89,256 @@ function ComplaintForm() {
       data.append('category', formData.category);
       data.append('lat', coordinates.lat);
       data.append('lng', coordinates.lng);
-      if (formData.image) {
-        data.append('image', formData.image);
-      }
+      if (formData.image) data.append('image', formData.image);
+
       const res = await axios.post(`${API_URL}/api/complaints/add`, data, {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'multipart/form-data'
-        }
+        headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'multipart/form-data' },
       });
 
       if (res && res.data) {
-        setModal({
-          show: true,
-          title: 'Success',
-          message: 'Complaint submitted!'
-        });
-        navigate('/dashboard');
+        setModal({ show: true, title: 'Success', message: 'Complaint submitted successfully!' });
       } else {
-        alert('Server responded but no data returned.');
+        setModal({ show: true, title: 'Error', message: 'Server responded but no data returned.' });
       }
-
     } catch (err) {
       console.error('Submission error:', err);
-      if (err.response) {
-        console.error('Error response from server:', err.response.data);
-      }
-      setModal({
-        show: true,
-        title: 'Error',
-        message: 'Error submitting complaint. See console.'
-      });
+      setModal({ show: true, title: 'Error', message: 'Error submitting complaint. Please try again.' });
+    } finally {
+      setSubmitting(false);
     }
   };
 
-  // 🔶 Internal CSS Styles
-  const containerStyle = {
-    maxWidth: '600px',
-     width: '100%',
-    margin: '30px auto',
-    padding: '20px',
-    border: '1px solid #ddd',
-    borderRadius: '10px',
-    boxShadow: '0 0 10px rgba(0,0,0,0.1)',
-    fontFamily: 'Arial, sans-serif',
-    backgroundColor: '#fafafa',
-    boxSizing: 'border-box'
-  };
-
-  const inputStyle = {
-  width: '100%',
-  padding: '12px 15px',
-  marginTop: '10px',
-  marginBottom: '10px',
-  fontSize: '16px',
-  borderRadius: '6px',
-  border: '1px solid #ccc',
-  backgroundColor: '#fff',
-  boxSizing: 'border-box',
-  display: 'block'
-};
-
-
-  const textAreaStyle = {
-    ...inputStyle,
-    height: '100px',
-    resize: 'vertical'
-  };
-
-  const selectStyle = {
-    ...inputStyle
-  };
-
-  const buttonStyle = {
-    width: '100%',
-    padding: '10px',
-    backgroundColor: '#007bff',
-    color: 'white',
-    border: 'none',
-    borderRadius: '5px',
-    fontSize: '16px',
-    marginTop: '10px',
-    cursor: 'pointer'
-  };
-
-  const previewStyle = {
-    width: '200px',
-    maxWidth: '300px',
-    margin: '10px 0',
-    borderRadius: '8px',
-    border: '1px solid #ccc'
-  };
-
   return (
-  <div style={containerStyle}>
-    <h2>Submit a Complaint</h2>
-    <form onSubmit={handleSubmit}>
-      <input
-        type="text"
-        name="title"
-        placeholder="Title"
-        onChange={handleChange}
-        required
-        style={inputStyle}
-      />
+    <Layout>
+      <div className="form-container">
+        {/* Page heading */}
+        <div className="welcome-card" style={{ padding: '20px 24px', marginBottom: '24px' }}>
+          <h2 style={{ margin: 0, fontSize: '20px' }}>📝 Submit a Complaint</h2>
+          <p style={{ margin: '4px 0 0', fontSize: '13px' }}>
+            Help your community by reporting civic issues
+          </p>
+        </div>
 
-      <textarea
-        name="description"
-        placeholder="Description"
-        onChange={handleChange}
-        style={textAreaStyle}
-      />
+        <div className="card">
+          <form onSubmit={handleSubmit}>
+            {/* Title */}
+            <div className="form-group">
+              <label htmlFor="title">Complaint Title *</label>
+              <input
+                id="title"
+                type="text"
+                name="title"
+                placeholder="e.g. Broken road near school"
+                onChange={handleChange}
+                required
+                className="form-control"
+              />
+            </div>
 
-      {/* 📍 Place Name */}
-      <input
-        type="text"
-        name="placeName"
-        placeholder="Place Name (e.g. Opposite Laxmi Medical)"
-        value={formData.placeName}
-        onChange={handleChange}
-        required
-        style={inputStyle}
-      />
+            {/* Description */}
+            <div className="form-group">
+              <label htmlFor="description">Description</label>
+              <textarea
+                id="description"
+                name="description"
+                placeholder="Describe the issue in detail…"
+                onChange={handleChange}
+                className="form-control form-control--textarea"
+              />
+            </div>
 
-      {/* 🏘️ Area Name */}
-      <input
-        type="text"
-        name="areaName"
-        placeholder="Area Name (e.g. Hirabag)"
-        value={formData.areaName}
-        onChange={handleChange}
-        required
-        style={inputStyle}
-      />
+            {/* Place / Area / City */}
+            <div
+              style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))',
+                gap: '12px',
+              }}
+            >
+              <div className="form-group">
+                <label htmlFor="placeName">Place Name *</label>
+                <input
+                  id="placeName"
+                  type="text"
+                  name="placeName"
+                  placeholder="e.g. Opposite Laxmi Medical"
+                  value={formData.placeName}
+                  onChange={handleChange}
+                  required
+                  className="form-control"
+                />
+              </div>
+              <div className="form-group">
+                <label htmlFor="areaName">Area Name *</label>
+                <input
+                  id="areaName"
+                  type="text"
+                  name="areaName"
+                  placeholder="e.g. Hirabag"
+                  value={formData.areaName}
+                  onChange={handleChange}
+                  required
+                  className="form-control"
+                />
+              </div>
+              <div className="form-group">
+                <label htmlFor="cityName">City Name *</label>
+                <input
+                  id="cityName"
+                  type="text"
+                  name="cityName"
+                  placeholder="e.g. Surat"
+                  value={formData.cityName}
+                  onChange={handleChange}
+                  required
+                  className="form-control"
+                />
+              </div>
+            </div>
 
-      {/* 🏙️ City Name */}
-      <input
-        type="text"
-        name="cityName"
-        placeholder="City Name (e.g. Surat)"
-        value={formData.cityName}
-        onChange={handleChange}
-        required
-        style={inputStyle}
-      />
+            {/* Auto-detected location */}
+            <div className="form-group">
+              <label htmlFor="location">Auto-detected Location</label>
+              <input
+                id="location"
+                type="text"
+                name="location"
+                placeholder="Pick a location on the map below"
+                value={coordinates.location}
+                readOnly
+                className="form-control"
+                style={{ background: '#f9fafb', color: '#6b7280' }}
+              />
+            </div>
 
-      {/* 📌 Auto Location (readonly) */}
-      <input
-        type="text"
-        name="location"
-        placeholder="Location"
-        value={coordinates.location}
-        readOnly
-        style={inputStyle}
-      />
+            {/* Category */}
+            <div className="form-group">
+              <label htmlFor="category">Category *</label>
+              <select
+                id="category"
+                name="category"
+                onChange={handleChange}
+                required
+                className="form-control"
+                value={formData.category}
+              >
+                <option value="">Select Category</option>
+                {categories.map((cat) => (
+                  <option key={cat._id} value={cat.name}>
+                    {cat.name}
+                  </option>
+                ))}
+              </select>
+            </div>
 
-      {/* 🗂️ Category */}
-      <select name="category" onChange={handleChange} required style={selectStyle} value={formData.category}>
-        <option value="">Select Category</option>
-        {categories.map(cat => (
-          <option key={cat._id} value={cat.name}>{cat.name}</option>
-        ))}
-      </select>
+            {/* Date */}
+            <div className="form-group">
+              <label>Date</label>
+              <input
+                type="text"
+                value={new Date().toLocaleDateString()}
+                readOnly
+                className="form-control"
+                style={{ background: '#f9fafb', color: '#6b7280' }}
+              />
+            </div>
 
-      {/* 🗓️ Date */}
-      <p style={{ marginTop: '10px' }}>
-        <strong>Date:</strong> {new Date().toLocaleDateString()}
-      </p>
+            {/* Image Upload */}
+            <div className="form-group">
+              <label htmlFor="image">Upload Image (jpg/png, max 5 MB)</label>
+              <input
+                id="image"
+                type="file"
+                name="image"
+                accept="image/jpeg,image/png"
+                onChange={handleChange}
+                className="form-control"
+              />
+              {preview && (
+                <img
+                  src={preview}
+                  alt="Preview"
+                  style={{
+                    width: '100%',
+                    maxWidth: '280px',
+                    marginTop: '10px',
+                    borderRadius: '10px',
+                    border: '2px solid #ede9fe',
+                  }}
+                />
+              )}
+            </div>
 
-      {/* 📷 Image Upload */}
-      <input type="file" name="image" onChange={handleChange} style={inputStyle} />
-      {preview && <img src={preview} alt="Preview" style={previewStyle} />}
+            {/* Map Picker */}
+            <div className="form-group">
+              <label>Pick Location on Map</label>
+              <div
+                style={{
+                  borderRadius: '10px',
+                  overflow: 'hidden',
+                  border: '1px solid #ddd',
+                }}
+              >
+                <MapPicker
+                  onLocationSelect={(lat, lng, locationName) => {
+                    setCoordinates({ lat, lng, location: locationName });
+                  }}
+                />
+              </div>
+            </div>
 
-      {/* 🗺️ Map Picker */}
-      <MapPicker
-        onLocationSelect={(lat, lng, locationName) => {
-          setCoordinates({ lat, lng, location: locationName });
-        }}
-      />
-
-      {/* 🚀 Submit */}
-      <button type="submit" style={buttonStyle}>Submit</button>
-    </form>
-    {modal.show && (
-      <div style={{
-        position: 'fixed',
-        top: 0, left: 0, right: 0, bottom: 0,
-        backgroundColor: 'rgba(0,0,0,0.4)',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        zIndex: 999
-      }}>
-        <div style={{
-          backgroundColor: '#fff',
-          padding: '20px',
-          borderRadius: '8px',
-          width: '300px',
-          boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
-          textAlign: 'center'
-        }}>
-          <h3>{modal.title}</h3>
-          <p>{modal.message}</p>
-          <button onClick={() => {
-            setModal({ ...modal, show: false });
-            // Optionally, redirect after success
-            if (modal.title === 'Success') navigate('/dashboard');
-            if (modal.title === 'Login Required') navigate('/login');
-          }} style={{
-            marginTop: '10px',
-            padding: '8px 16px',
-            border: 'none',
-            borderRadius: '5px',
-            background: '#007bff',
-            color: '#fff',
-            cursor: 'pointer'
-          }}>
-            OK
-          </button>
+            {/* Submit */}
+            <button type="submit" className="btn-primary" disabled={submitting}>
+              {submitting ? 'Submitting…' : '🚀 Submit Complaint'}
+            </button>
+          </form>
         </div>
       </div>
-    )}
-  </div>
-);
 
+      {/* Modal */}
+      {modal.show && (
+        <div
+          style={{
+            position: 'fixed',
+            inset: 0,
+            background: 'rgba(0,0,0,0.45)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 999,
+          }}
+        >
+          <div
+            style={{
+              background: '#fff',
+              padding: '28px 32px',
+              borderRadius: '14px',
+              width: '320px',
+              boxShadow: '0 8px 32px rgba(0,0,0,0.18)',
+              textAlign: 'center',
+            }}
+          >
+            <div style={{ fontSize: '40px', marginBottom: '12px' }}>
+              {modal.title === 'Success' ? '✅' : modal.title === 'Login Required' ? '🔒' : '⚠️'}
+            </div>
+            <h3 style={{ margin: '0 0 8px', color: '#1e1b4b' }}>{modal.title}</h3>
+            <p style={{ margin: '0 0 20px', color: '#4b5563', fontSize: '14px' }}>{modal.message}</p>
+            <button
+              onClick={() => {
+                setModal({ ...modal, show: false });
+                if (modal.title === 'Success') navigate('/dashboard');
+                if (modal.title === 'Login Required') navigate('/login');
+              }}
+              className="btn-primary"
+              style={{ width: 'auto', padding: '10px 28px' }}
+            >
+              OK
+            </button>
+          </div>
+        </div>
+      )}
+    </Layout>
+  );
 }
 
 export default ComplaintForm;
-

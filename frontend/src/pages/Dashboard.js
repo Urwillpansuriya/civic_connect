@@ -3,15 +3,27 @@ import { useNavigate } from 'react-router-dom';
 import { getToken, isAuthenticated } from '../utils/auth';
 import axios from 'axios';
 import LikeButton from '../components/LikeButton';
-import CommentSection from '../components/CommentSection';
 import getImageSrc from '../utils/image';
-const API_URL = process.env.REACT_APP_API_URL || "https://civic-connect-hams.onrender.com";
+import Layout from '../components/Layout';
+import '../components/Layout.css';
+
+const API_URL = process.env.REACT_APP_API_URL || 'https://civic-connect-hams.onrender.com';
+
+function getStatusClass(status) {
+  const s = (status || '').toLowerCase().replace(' ', '-');
+  if (s === 'pending') return 'pill pill--pending';
+  if (s === 'in-progress' || s === 'inprogress') return 'pill pill--in-progress';
+  if (s === 'resolved') return 'pill pill--resolved';
+  if (s === 'rejected') return 'pill pill--rejected';
+  return 'pill pill--default';
+}
+
 function Dashboard() {
-  const [user, setUser] = useState({ name: '', email: '', location: '' });
+  const [user, setUser] = useState({ name: '', email: '' });
   const [userComplaints, setUserComplaints] = useState([]);
   const [allComplaints, setAllComplaints] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
-  
+  const [filterStatus, setFilterStatus] = useState('');
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -19,7 +31,6 @@ function Dashboard() {
       navigate('/login');
       return;
     }
-
     const savedUser = JSON.parse(localStorage.getItem('user'));
     if (savedUser) setUser(savedUser);
 
@@ -27,122 +38,197 @@ function Dashboard() {
       try {
         const [userRes, allRes] = await Promise.all([
           axios.get(`${API_URL}/api/complaints/mine`, {
-            headers: { Authorization: `Bearer ${getToken()}` }
+            headers: { Authorization: `Bearer ${getToken()}` },
           }),
           axios.get(`${API_URL}/api/complaints/all`, {
-            headers: { Authorization: `Bearer ${getToken()}` }
-          })
+            headers: { Authorization: `Bearer ${getToken()}` },
+          }),
         ]);
         setUserComplaints(userRes.data);
-        setAllComplaints(Array.isArray(allRes.data) ? allRes.data : allRes.data.complaints || []);
+        setAllComplaints(
+          Array.isArray(allRes.data) ? allRes.data : allRes.data.complaints || []
+        );
       } catch (err) {
-        console.error('❌ Fetch error:', err);
+        console.error('Fetch error:', err);
       }
     };
 
     fetchData();
   }, [navigate]);
 
-  const handleLogout = () => {
-    localStorage.clear();
-    navigate('/login');
-  };
+  const filteredComplaints = allComplaints.filter((c) => {
+    const matchSearch =
+      c.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      c.location?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      c.placeName?.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchStatus = filterStatus
+      ? (c.status || '').toLowerCase() === filterStatus.toLowerCase()
+      : true;
+    return matchSearch && matchStatus;
+  });
 
-
-  const cardStyle = {
-    border: '1px solid #ccc',
-    borderRadius: '8px',
-    padding: '15px',
-    marginTop: '15px',
-    backgroundColor: '#f9f9f9'
-  };
-
-  const imageStyle = {
-    width: '200px',
-    marginTop: '10px',
-    borderRadius: '6px',
-    border: '1px solid #ddd'
-  };
-
-  const filteredComplaints = allComplaints.filter((c) =>
-    c.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    c.location?.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const totalMine = userComplaints.length;
+  const resolvedMine = userComplaints.filter(
+    (c) => c.status?.toLowerCase() === 'resolved'
+  ).length;
+  const pendingMine = userComplaints.filter(
+    (c) => c.status?.toLowerCase() === 'pending'
+  ).length;
 
   return (
-    <div style={{ padding: '30px', fontFamily: 'Arial, sans-serif', maxWidth: '900px', margin: '0 auto' }}>
-      <h2>Welcome, {user.name}</h2>
-      <p><strong>Email:</strong> {user.email}</p>
-      {/* <p><strong>Location:</strong> {user.location}</p> */}
-
-      <div style={{ display: 'flex', gap: '10px', margin: '15px 0' }}>
-        <button onClick={handleLogout} style={{ backgroundColor: '#dc3545', color: '#fff', padding: '10px', border: 'none', borderRadius: '5px' }}>Logout</button>
-        <button onClick={() => navigate('/submit-complaint')} style={{ backgroundColor: '#007bff', color: '#fff', padding: '10px', border: 'none', borderRadius: '5px' }}>Add Complaint</button>
-        <button onClick={() => navigate('/map-view')} style={{ backgroundColor: '#198754', color: '#fff', padding: '10px', border: 'none', borderRadius: '5px' }}>View Map</button>
+    <Layout>
+      {/* Welcome card */}
+      <div className="welcome-card">
+        <h2>👋 Welcome back, {user.name || 'User'}!</h2>
+        <p>Track and manage your civic complaints all in one place.</p>
+        <button
+          onClick={() => navigate('/submit-complaint')}
+          style={{
+            marginTop: '16px',
+            padding: '10px 22px',
+            background: 'rgba(255,255,255,0.2)',
+            border: '1.5px solid rgba(255,255,255,0.6)',
+            borderRadius: '8px',
+            color: '#fff',
+            fontSize: '14px',
+            fontWeight: '600',
+            cursor: 'pointer',
+          }}
+        >
+          + Submit New Complaint
+        </button>
       </div>
 
-      {/* User's Complaints */}
-      {userComplaints.map(c => (
-        <div key={c._id} style={cardStyle}>
-          <h4>{c.title}</h4>
-          <p><strong>Description:</strong> {c.description}</p>
-          <p><strong>Category:</strong> {c.category}</p>
-          <p><strong>Place:</strong> {c.placeName}</p>
-          <p><strong>Area:</strong> {c.areaName}</p>
-          <p><strong>City:</strong> {c.cityName}</p>
-          <p><strong>Location:</strong>{c.location}</p>
-          <p><strong>Coordinates:</strong> {c.lat}, {c.lng}</p>
-          <p><strong>Status:</strong> <span className={`status-badge ${c.status}`}>{c.status}</span></p>
-          <p><strong>Date:</strong> {new Date(c.createdAt).toLocaleDateString()}</p>
-          {c.imageUrl && (
-            <img src={getImageSrc(c.imageUrl)} alt="complaint" style={imageStyle} />
-          )}
-          <LikeButton complaintId={c._id} initialLikes={c.likes || 0} />
+      {/* Stats row */}
+      <div className="stats-row">
+        <div className="stat-card">
+          <div className="stat-value">{totalMine}</div>
+          <div className="stat-label">My Complaints</div>
         </div>
-      ))}
+        <div className="stat-card">
+          <div className="stat-value">{pendingMine}</div>
+          <div className="stat-label">Pending</div>
+        </div>
+        <div className="stat-card">
+          <div className="stat-value">{resolvedMine}</div>
+          <div className="stat-label">Resolved</div>
+        </div>
+        <div className="stat-card">
+          <div className="stat-value">{allComplaints.length}</div>
+          <div className="stat-label">Total Community</div>
+        </div>
+      </div>
 
-      {/* 🔍 Search Bar */}
-      <div style={{ marginTop: '40px', marginBottom: '10px' }}>
+      {/* My Complaints section */}
+      {userComplaints.length > 0 && (
+        <>
+          <p className="section-heading">My Complaints</p>
+          <p className="section-sub">Complaints you have submitted</p>
+          <div className="complaint-grid">
+            {userComplaints.map((c) => (
+              <div
+                key={c._id}
+                className="complaint-card"
+                onClick={() => navigate(`/complaints/${c._id}`)}
+              >
+                {c.imageUrl && (
+                  <img
+                    src={getImageSrc(c.imageUrl)}
+                    alt="complaint"
+                    className="complaint-card__image"
+                  />
+                )}
+                <p className="complaint-card__title">{c.title}</p>
+                <p className="complaint-card__meta">
+                  📍 {c.placeName || c.location || 'Unknown'} &nbsp;•&nbsp;{' '}
+                  {c.cityName || ''}
+                </p>
+                <p className="complaint-card__desc">{c.description}</p>
+                <div className="complaint-card__footer">
+                  <span className={getStatusClass(c.status)}>{c.status}</span>
+                  <span className="complaint-card__meta">
+                    {new Date(c.createdAt).toLocaleDateString()}
+                  </span>
+                </div>
+                <div onClick={(e) => e.stopPropagation()}>
+                  <LikeButton complaintId={c._id} initialLikes={c.likes || 0} />
+                </div>
+              </div>
+            ))}
+          </div>
+        </>
+      )}
+
+      {/* Search/filter bar */}
+      <p className="section-heading" style={{ marginTop: '36px' }}>
+        Community Complaints
+      </p>
+      <p className="section-sub">Browse all registered civic issues</p>
+      <div className="search-bar-row">
         <input
           type="text"
-          placeholder="Search by title or location..."
+          className="search-input"
+          placeholder="🔍 Search by title, location..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          style={{
-            padding: '10px',
-            width: '100%',
-            fontSize: '16px',
-            borderRadius: '6px',
-            border: '1px solid #ccc'
-          }}
         />
+        <select
+          className="filter-select"
+          value={filterStatus}
+          onChange={(e) => setFilterStatus(e.target.value)}
+        >
+          <option value="">All Status</option>
+          <option value="pending">Pending</option>
+          <option value="in-progress">In Progress</option>
+          <option value="resolved">Resolved</option>
+          <option value="rejected">Rejected</option>
+        </select>
       </div>
 
-      {/* All Complaints */}
-      <h3 style={{ marginTop: '20px' }}>All Registered Complaints</h3>
+      {/* All complaints grid */}
       {filteredComplaints.length === 0 ? (
-        <p>No complaints match your search.</p>
+        <div className="card" style={{ textAlign: 'center', padding: '40px', color: '#9ca3af' }}>
+          <div style={{ fontSize: '40px', marginBottom: '12px' }}>🔎</div>
+          <p>No complaints match your search.</p>
+        </div>
       ) : (
-        filteredComplaints.map(c => (
-          <div key={c._id} style={cardStyle}>
-            <h4>{c.title}</h4>
-            <p>{c.description}</p>
-            <p><strong>User:</strong> {c.user?.name || 'Unknown'}</p>
-            <p><strong>Place:</strong> {c.placeName}</p>
-            <p><strong>Area:</strong> {c.areaName}</p>
-            <p><strong>City:</strong> {c.cityName}</p>
-            <p><strong>Location:</strong> {c.location}</p>
-            <p><strong>Status:</strong> {c.status}</p>
-            {c.imageUrl && (
-              <img src={getImageSrc(c.imageUrl)} alt="complaint" style={imageStyle} />
-            )}
-            <br></br>
-            <LikeButton complaintId={c._id} />
-            <CommentSection complaintId={c._id} />
-          </div>
-        ))
+        <div className="complaint-grid">
+          {filteredComplaints.map((c) => (
+            <div
+              key={c._id}
+              className="complaint-card"
+              onClick={() => navigate(`/complaints/${c._id}`)}
+            >
+              {c.imageUrl && (
+                <img
+                  src={getImageSrc(c.imageUrl)}
+                  alt="complaint"
+                  className="complaint-card__image"
+                />
+              )}
+              <p className="complaint-card__title">{c.title}</p>
+              <p className="complaint-card__meta">
+                📍 {c.placeName || c.location || 'Unknown'}
+                {c.cityName ? ` • ${c.cityName}` : ''}
+              </p>
+              <p className="complaint-card__meta">
+                👤 {c.user?.name || 'Anonymous'}
+              </p>
+              <p className="complaint-card__desc">{c.description}</p>
+              <div className="complaint-card__footer">
+                <span className={getStatusClass(c.status)}>{c.status}</span>
+                <span className="complaint-card__meta">
+                  {new Date(c.createdAt).toLocaleDateString()}
+                </span>
+              </div>
+              <div onClick={(e) => e.stopPropagation()}>
+                <LikeButton complaintId={c._id} initialLikes={c.likes || 0} />
+              </div>
+            </div>
+          ))}
+        </div>
       )}
-    </div>
+    </Layout>
   );
 }
 
