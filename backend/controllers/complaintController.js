@@ -62,6 +62,9 @@ exports.submitComplaint = async (req, res) => {
       }
     }
 
+    const parsedLat = parseFloat(lat);
+    const parsedLng = parseFloat(lng);
+
     const complaint = new Complaint({
       title,
       description,
@@ -73,8 +76,8 @@ exports.submitComplaint = async (req, res) => {
       areaName,
       cityName,
       coordinates: {
-        lat: parseFloat(lat),
-        lng: parseFloat(lng)
+        lat: isNaN(parsedLat) ? undefined : parsedLat,
+        lng: isNaN(parsedLng) ? undefined : parsedLng,
       },
       user: req.user._id,
       createdBy: req.user._id,
@@ -129,21 +132,25 @@ exports.addComplaint = async (req, res) => {
       }
     }
 
+    const parsedLat = parseFloat(lat);
+    const parsedLng = parseFloat(lng);
+
     const complaint = new Complaint({
       title,
       description,
       category,
       imageUrl,
       imagePublicId,
-      location: locationName,
+      location: locationName || location,
       placeName,
       areaName,
       cityName,
       coordinates: {
-        lat: parseFloat(lat),
-        lng: parseFloat(lng)
+        lat: isNaN(parsedLat) ? undefined : parsedLat,
+        lng: isNaN(parsedLng) ? undefined : parsedLng,
       },
-      createdBy: req.userId,
+      user: req.user._id,
+      createdBy: req.user._id,
       date: new Date()
     });
 
@@ -159,7 +166,7 @@ exports.addComplaint = async (req, res) => {
     });
 
   } catch (err) {
-    console.error('❌ Error in submitComplaint:', err);
+    console.error('❌ Error in addComplaint:', err);
     return res.status(500).json({
       success: false,
       error: err.message || 'Something went wrong'

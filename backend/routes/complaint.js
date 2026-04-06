@@ -79,8 +79,8 @@ router.get('/', async (req, res) => {
   }
 });
 
-// ✅ Admin Status Update  (must be before /:id)
-router.patch('/status/:id', authMiddleware, updateComplaintStatus);
+// ✅ Admin Status Update — matches frontend: PATCH /api/complaints/:id/status
+router.patch('/:id/status', authMiddleware, updateComplaintStatus);
 
 // ✅ Upvote / Unvote Complaint
 router.post('/:id/upvote', authMiddleware, async (req, res) => {

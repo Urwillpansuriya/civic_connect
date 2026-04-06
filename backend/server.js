@@ -76,6 +76,19 @@ app.use('/api/analytics', analyticsRouter);
 // Serve uploaded images (kept for any legacy local images)
 app.use('/uploads', express.static('uploads'));
 
+// ─── Global Error Handler ─────────────────────────────────────────────────────
+// Catches multer errors (file type, file size) and any other unhandled errors
+// and returns a proper JSON response instead of crashing with 500.
+app.use((err, req, res, next) => {
+  if (err) {
+    const status = err.status || err.statusCode || 500;
+    const message = err.message || 'Internal server error';
+    console.error('❌ Global error handler:', message);
+    return res.status(status).json({ success: false, error: message });
+  }
+  next();
+});
+
 // ─── Start Server ────────────────────────────────────────────────────────────
 const PORT = process.env.PORT || 5000;
 server.listen(PORT, () => {
