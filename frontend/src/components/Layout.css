@@ -240,31 +240,17 @@ body {
 }
 
 /* ── Image ──────────────────────────────────────────────────── */
-.complaint-card__image-wrap {
-  width: 100%;
-  height: 180px;
-  overflow: hidden;
-  background: #f5f4fb;
-  flex-shrink: 0;
-}
 .complaint-card__image {
   width: 100%;
-  height: 100%;
+  height: 180px;
   object-fit: cover;
   display: block;
+  flex-shrink: 0;
+  border-radius: 0;
   transition: transform 0.4s ease;
 }
 .complaint-card:hover .complaint-card__image {
   transform: scale(1.04);
-}
-
-/* ── Body ───────────────────────────────────────────────────── */
-.complaint-card__body {
-  padding: 18px 18px 16px;
-  display: flex;
-  flex-direction: column;
-  gap: 0;
-  flex: 1;
 }
 
 /* ── Title ──────────────────────────────────────────────────── */
@@ -272,25 +258,17 @@ body {
   font-size: 15px;
   font-weight: 700;
   color: #1a1235;
-  margin: 0 0 10px;
+  margin: 16px 16px 0;
   line-height: 1.4;
   letter-spacing: -0.1px;
 }
 
-/* ── Meta row (location · city) ─────────────────────────────── */
+/* ── Meta ───────────────────────────────────────────────────── */
 .complaint-card__meta {
-  display: flex;
-  align-items: center;
-  gap: 6px;
   font-size: 12px;
   font-weight: 500;
   color: #7c6fa0;
-  margin-bottom: 10px;
-  flex-wrap: wrap;
-}
-.complaint-card__meta-dot {
-  color: #c4b8e8;
-  font-size: 10px;
+  margin: 8px 16px 0;
 }
 
 /* ── Description ────────────────────────────────────────────── */
@@ -298,87 +276,24 @@ body {
   font-size: 13px;
   color: #6b6585;
   line-height: 1.65;
+  margin: 8px 16px 0;
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
-  margin-bottom: 14px;
   flex: 1;
 }
 
-/* ── Footer (status badge + date) ──────────────────────────── */
+/* ── Footer ─────────────────────────────────────────────────── */
 .complaint-card__footer {
   display: flex;
   align-items: center;
   justify-content: space-between;
   flex-wrap: wrap;
   gap: 8px;
-  margin-top: auto;
+  margin: 14px 16px 16px;
   padding-top: 12px;
   border-top: 1px solid #f3f0fb;
-}
-
-/* ── Date ───────────────────────────────────────────────────── */
-.complaint-card__date {
-  font-size: 12px;
-  font-weight: 500;
-  color: #b0a8cc;
-  letter-spacing: 0.2px;
-}
-
-/* ── Status Badge ───────────────────────────────────────────── */
-.complaint-card__badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  padding: 4px 11px;
-  border-radius: 20px;
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.2px;
-  white-space: nowrap;
-}
-.complaint-card__badge--resolved {
-  background: #dcfce7;
-  color: #15803d;
-  border: 1px solid #bbf7d0;
-}
-.complaint-card__badge--pending {
-  background: #fef9c3;
-  color: #a16207;
-  border: 1px solid #fde68a;
-}
-.complaint-card__badge--in-progress {
-  background: #dbeafe;
-  color: #1d4ed8;
-  border: 1px solid #bfdbfe;
-}
-.complaint-card__badge--rejected {
-  background: #fee2e2;
-  color: #b91c1c;
-  border: 1px solid #fecaca;
-}
-
-/* ── No-image placeholder ───────────────────────────────────── */
-.complaint-card__image-placeholder {
-  width: 100%;
-  height: 180px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  background: linear-gradient(135deg, #f5f3ff 0%, #ede9fe 100%);
-  color: #c4b5fd;
-  font-size: 32px;
-  flex-shrink: 0;
-}
-.complaint-card__image-placeholder-text {
-  font-size: 11px;
-  font-weight: 600;
-  color: #c4b5fd;
-  text-transform: capitalize;
-  letter-spacing: 0.5px;
 }
 
 
