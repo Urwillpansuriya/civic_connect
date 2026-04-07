@@ -68,7 +68,7 @@ function Login() {
           </form>
 
           <div style={styles.divider}><span style={styles.dividerText}>New to CivicConnect?</span></div>
-          <button onClick={() => navigate('/')} style={styles.secondaryBtn}>Create Account</button>
+          <button onClick={() => navigate('/register')} style={styles.secondaryBtn}>Create Account</button>
 
           <p style={styles.adminLink}>
             Are you an admin?{' '}

@@ -133,6 +133,9 @@ function AdminDashboard() {
           <button style={s.navBtn} onClick={() => navigate('/admin/complaints')}>
             <span>📋</span> Complaints
           </button>
+          <button style={s.navBtn} onClick={() => navigate('/')}>
+            <span>🌐</span> Public View
+          </button>
         </nav>
         <div style={s.sidebarFooter}>
           <button
