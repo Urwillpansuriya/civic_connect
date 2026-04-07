@@ -9,6 +9,9 @@ import Modal from '../components/Modal';
 
 const API_URL = process.env.REACT_APP_API_URL || 'https://civic-connect-hams.onrender.com';
 
+const getLikeCount = (likes) =>
+  Array.isArray(likes) ? likes.length : (likes || 0);
+
 const STATUS_COLORS = {
   pending:       { bg: '#fef3c7', text: '#92400e' },
   'in-progress': { bg: '#dbeafe', text: '#1e40af' },
@@ -55,7 +58,7 @@ function AdminDashboard() {
       const complaintsWithCounts = (res.data.complaints || []).map(complaint => ({
         ...complaint,
         commentCount: complaint.commentCount || (complaint.comments?.length ?? 0),
-        likeCount: Array.isArray(complaint.likes) ? complaint.likes.length : (complaint.likes || 0)
+        likeCount: getLikeCount(complaint.likes)
       }));
 
       setComplaints(complaintsWithCounts);

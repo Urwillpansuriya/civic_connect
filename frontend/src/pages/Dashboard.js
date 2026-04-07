@@ -7,6 +7,9 @@ import getImageSrc from '../utils/image';
 
 const API_URL = process.env.REACT_APP_API_URL || 'https://civic-connect-hams.onrender.com';
 
+const getLikeCount = (likes) =>
+  Array.isArray(likes) ? likes.length : (likes || 0);
+
 const STATUS_COLORS = {
   pending:       { bg: '#fef3c7', text: '#92400e' },
   'in-progress': { bg: '#dbeafe', text: '#1e40af' },
@@ -193,7 +196,7 @@ function Dashboard() {
                       <span>📅 {new Date(c.createdAt).toLocaleDateString()}</span>
                     </div>
                     <div onClick={(e) => e.stopPropagation()}>
-                      <LikeButton complaintId={c._id} initialLikes={Array.isArray(c.likes) ? c.likes.length : (c.likes || 0)} />
+                      <LikeButton complaintId={c._id} initialLikes={getLikeCount(c.likes)} />
                     </div>
                   </div>
                 </div>
@@ -249,7 +252,7 @@ function Dashboard() {
                       <span>🗂️ {c.category}</span>
                     </div>
                     <div onClick={(e) => e.stopPropagation()}>
-                      <LikeButton complaintId={c._id} initialLikes={Array.isArray(c.likes) ? c.likes.length : (c.likes || 0)} />
+                      <LikeButton complaintId={c._id} initialLikes={getLikeCount(c.likes)} />
                     </div>
                   </div>
                 </div>
