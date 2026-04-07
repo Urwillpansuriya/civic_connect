@@ -146,7 +146,7 @@ export default function MapPicker({ onLocationSelect }) {
   };
 
   return (
-    <MapContainer center={mapCenter} zoom={13} style={{ height: '300px', marginBottom: '1rem' }}>
+    <MapContainer center={mapCenter} zoom={5} style={{ height: '300px', marginBottom: '1rem' }}>
       <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
       <LocationMarker position={position} onMapClick={handleMapClick} />
     </MapContainer>
