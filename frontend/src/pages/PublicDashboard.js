@@ -186,8 +186,8 @@ function PublicDashboard() {
 
   // Debounce search input
   useEffect(() => {
-    const t = setTimeout(() => setDebouncedSearch(searchQuery), 350);
-    return () => clearTimeout(t);
+    const debounceTimer = setTimeout(() => setDebouncedSearch(searchQuery), 350);
+    return () => clearTimeout(debounceTimer);
   }, [searchQuery]);
 
   // Reset page when filters change
@@ -391,7 +391,7 @@ function PublicDashboard() {
                 style={{ background: '#f0f0ff', color: '#4f46e5' }}
                 onClick={() => setFilterStatus('')}
               >
-                {STATUS_CONFIG[filterStatus]?.icon} {filterStatus} ✕
+                {STATUS_CONFIG[filterStatus]?.icon} {STATUS_CONFIG[filterStatus]?.label || filterStatus} ✕
               </button>
             )}
             {debouncedSearch && (
@@ -611,11 +611,9 @@ const s = {
   },
   navLinks: { display: 'flex', alignItems: 'center', gap: '10px' },
   navLinkBtn: {
-    padding: '8px 18px',
     background: 'transparent',
     border: '1.5px solid #e5e7eb',
     borderRadius: '8px',
-    fontSize: '14px',
     fontWeight: '600',
     color: '#374151',
     cursor: 'pointer',
@@ -623,11 +621,9 @@ const s = {
     transition: 'background 0.15s, border-color 0.15s',
   },
   navCta: {
-    padding: '8px 18px',
     background: 'linear-gradient(135deg, #6366f1, #4f46e5)',
     border: 'none',
     borderRadius: '8px',
-    fontSize: '14px',
     fontWeight: '600',
     color: '#fff',
     cursor: 'pointer',
@@ -640,7 +636,6 @@ const s = {
   hero: {
     position: 'relative',
     background: 'linear-gradient(135deg, #1e1b4b 0%, #4338ca 45%, #7c3aed 100%)',
-    padding: '80px 24px 110px',
     textAlign: 'center',
     overflow: 'hidden',
   },
@@ -723,9 +718,7 @@ const s = {
     zIndex: 10,
   },
   statsGrid: {
-    display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
-    gap: '16px',
+    /* grid-template-columns and gap are in .pd-stats-grid CSS class */
   },
   statCard: {
     backgroundColor: '#fff',
@@ -788,9 +781,7 @@ const s = {
 
   /* Grid */
   grid: {
-    display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))',
-    gap: '24px',
+    /* grid-template-columns and gap are in .pd-grid CSS class */
   },
   card: {
     backgroundColor: '#fff',
@@ -803,7 +794,7 @@ const s = {
   },
   cardImgWrap: {
     width: '100%',
-    height: '180px',
+    /* height is in .pd-card-img-wrap CSS class (responsive) */
     overflow: 'hidden',
     backgroundColor: '#f1f5f9',
     flexShrink: 0,

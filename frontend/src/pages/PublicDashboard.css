@@ -79,6 +79,13 @@
   outline-offset: 2px;
 }
 
+/* Navbar buttons — base sizes; responsive overrides in media query below */
+.pd-nav-link-btn,
+.pd-nav-cta {
+  padding: 8px 18px;
+  font-size: 14px;
+}
+
 /* Navbar */
 .pd-nav-link-btn:hover {
   background-color: #f9fafb;
@@ -191,6 +198,30 @@
   flex-wrap: wrap;
 }
 
+/* Stats grid — base layout defined here so media queries can override cleanly */
+.pd-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 16px;
+}
+
+/* Complaints grid — base layout */
+.pd-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 24px;
+}
+
+/* Hero section base padding */
+.pd-hero {
+  padding: 80px 24px 110px;
+}
+
+/* Card image wrap height */
+.pd-card-img-wrap {
+  height: 180px;
+}
+
 /* Grid stagger animation */
 .pd-card:nth-child(1)  { animation-delay: 0.05s; }
 .pd-card:nth-child(2)  { animation-delay: 0.10s; }
@@ -220,10 +251,10 @@
     justify-content: flex-start;
   }
   .pd-stats-grid {
-    grid-template-columns: repeat(2, 1fr) !important;
+    grid-template-columns: repeat(2, 1fr);
   }
   .pd-hero {
-    padding: 56px 20px 80px !important;
+    padding: 56px 20px 80px;
   }
   .pd-hero-actions {
     flex-direction: column;
@@ -233,30 +264,28 @@
     width: 100%;
   }
   .pd-grid {
-    grid-template-columns: 1fr !important;
+    grid-template-columns: 1fr;
   }
   .pd-nav-links {
     gap: 6px;
   }
-  .pd-nav-link-btn {
-    padding: 7px 12px !important;
-    font-size: 13px !important;
-  }
+  .pd-nav-link-btn,
   .pd-nav-cta {
-    padding: 7px 12px !important;
-    font-size: 13px !important;
+    padding: 7px 12px;
+    font-size: 13px;
   }
 }
 
 @media (max-width: 480px) {
   .pd-stats-grid {
-    grid-template-columns: repeat(2, 1fr) !important;
-    gap: 10px !important;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
   }
   .pd-card-img-wrap {
-    height: 150px !important;
+    height: 150px;
   }
   .pd-brand-text {
-    font-size: 16px !important;
+    font-size: 16px;
   }
 }
+
