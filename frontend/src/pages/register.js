@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-const API_URL = "https://civic-connect-hams.onrender.com";
+
+const API_URL = process.env.REACT_APP_API_URL || 'https://civic-connect-hams.onrender.com';
 
 function Register() {
   const [modal, setModal] = useState({ show: false, title: '', message: '' });

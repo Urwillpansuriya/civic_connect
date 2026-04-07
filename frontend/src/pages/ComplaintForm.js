@@ -47,12 +47,12 @@ function ComplaintForm() {
   const validateImage = (file, inputRef) => {
     if (!file.type.match(/^image\/(jpeg|png)$/)) {
       setModal({ show: true, title: 'Invalid File', message: 'Only jpg, jpeg and png images are allowed.' });
-      if (inputRef) inputRef.value = '';
+      if (inputEl) inputEl.value = '';
       return false;
     }
     if (file.size > 5 * 1024 * 1024) {
       setModal({ show: true, title: 'File Too Large', message: 'Image must be smaller than 5 MB.' });
-      if (inputRef) inputRef.value = '';
+      if (inputEl) inputEl.value = '';
       return false;
     }
     return true;
@@ -108,6 +108,7 @@ function ComplaintForm() {
       if (formData.image) data.append('image', formData.image);
 
       const res = await axios.post(`${API_URL}/api/complaints/add`, data, {
+        headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'multipart/form-data' }
         headers: { Authorization: `Bearer ${token}` }
       });
 
@@ -118,6 +119,8 @@ function ComplaintForm() {
       }
     } catch (err) {
       console.error('Submission error:', err);
+      const msg = err.response?.data?.error || err.response?.data?.message || 'Error submitting complaint. Please try again.';
+      setModal({ show: true, title: 'Error', message: msg });
       setModal({ show: true, title: 'Error', message: err.response?.data?.error || 'Error submitting complaint. Please try again.' });
     } finally {
       setSubmitting(false);
@@ -226,6 +229,8 @@ function ComplaintForm() {
                 />
               </div>
             </div>
+
+            {/* Map */}
             <div style={s.mapCard}>
               <p style={s.mapHint}>📌 Click on the map to set exact coordinates</p>
               <MapPicker

@@ -4,11 +4,36 @@ import { getToken, isAuthenticated } from '../utils/auth';
 import axios from 'axios';
 import LikeButton from '../components/LikeButton';
 import getImageSrc from '../utils/image';
-import Layout from '../components/Layout';
-import '../components/Layout.css';
 
 const API_URL = process.env.REACT_APP_API_URL || 'https://civic-connect-hams.onrender.com';
 
+const getLikeCount = (likes) =>
+  Array.isArray(likes) ? likes.length : (likes || 0);
+
+const STATUS_COLORS = {
+  pending:       { bg: '#fef3c7', text: '#92400e' },
+  'in-progress': { bg: '#dbeafe', text: '#1e40af' },
+  resolved:      { bg: '#d1fae5', text: '#065f46' },
+  rejected:      { bg: '#fee2e2', text: '#991b1b' }
+};
+
+function statusPill(status) {
+  const s = (status || 'pending').toLowerCase();
+  const c = STATUS_COLORS[s] || { bg: '#f3f4f6', text: '#374151' };
+  return (
+    <span style={{
+      display: 'inline-block',
+      padding: '3px 10px',
+      borderRadius: '20px',
+      fontSize: '12px',
+      fontWeight: '600',
+      backgroundColor: c.bg,
+      color: c.text,
+      textTransform: 'capitalize'
+    }}>
+      {status || 'pending'}
+    </span>
+  );
 function getStatusClass(status) {
   const s = (status || '').toLowerCase().replace(' ', '-');
   if (s === 'pending') return 'pill pill--pending';
@@ -23,6 +48,7 @@ function Dashboard() {
   const [userComplaints, setUserComplaints] = useState([]);
   const [allComplaints, setAllComplaints] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const [filterStatus, setFilterStatus] = useState('');
 
   const navigate = useNavigate();
@@ -45,7 +71,7 @@ function Dashboard() {
             headers: { Authorization: `Bearer ${getToken()}` },
           }),
         ]);
-        setUserComplaints(userRes.data);
+        setUserComplaints(Array.isArray(userRes.data) ? userRes.data : []);
         setAllComplaints(
           Array.isArray(allRes.data) ? allRes.data : allRes.data.complaints || []
         );
