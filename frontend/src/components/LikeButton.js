@@ -1,39 +1,49 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 
+const API_URL = process.env.REACT_APP_API_URL || 'https://civic-connect-hams.onrender.com';
+
 function LikeButton({ complaintId, initialLikes = 0 }) {
   const [likes, setLikes] = useState(initialLikes);
   const [clicked, setClicked] = useState(false);
 
   const handleLike = async () => {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      alert('Please login to like a complaint.');
+      return;
+    }
     try {
-      // Fix: Update the API endpoint to match the backend route structure
-      const res = await axios.post(`http://localhost:5000/api/complaints/like/${complaintId}`, {}, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem('token')}`
-        }
+      const res = await axios.post(`${API_URL}/api/complaints/like/${complaintId}`, {}, {
+        headers: { Authorization: `Bearer ${token}` }
       });
       setLikes(res.data.likes);
       setClicked(!clicked);
     } catch (err) {
       console.error('Like error:', err);
-        alert('Login required to like a complaint.');
+      if (err.response?.status === 401) {
+        alert('Please login to like a complaint.');
+      }
     }
   };
 
   return (
-    <button onClick={handleLike} style={{
-    backgroundColor: clicked ? '#28a745' : '#eeeeee',
-    color: clicked ? '#fff' : '#333',
-    padding: '6px 14px',
-    border: 'none',
-    borderRadius: '20px',
-    fontSize: '14px',
-    cursor: 'pointer',
-    transition: 'all 0.2s ease-in-out',
-    marginTop: '10px'
-        }}>
-      👍 Like {likes}
+    <button
+      onClick={handleLike}
+      style={{
+        backgroundColor: clicked ? '#4f46e5' : '#f3f4f6',
+        color: clicked ? '#fff' : '#374151',
+        padding: '6px 14px',
+        border: 'none',
+        borderRadius: '20px',
+        fontSize: '14px',
+        cursor: 'pointer',
+        transition: 'all 0.2s ease-in-out',
+        marginTop: '10px',
+        fontWeight: '500'
+      }}
+    >
+      👍 {likes}
     </button>
   );
 }

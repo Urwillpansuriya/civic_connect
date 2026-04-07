@@ -4,25 +4,14 @@ import { getToken, isAuthenticated } from '../utils/auth';
 import axios from 'axios';
 import LikeButton from '../components/LikeButton';
 import getImageSrc from '../utils/image';
-import Layout from '../components/Layout';
-import '../components/Layout.css';
 
 const API_URL = process.env.REACT_APP_API_URL || 'https://civic-connect-hams.onrender.com';
 
-function getStatusClass(status) {
-  const s = (status || '').toLowerCase().replace(' ', '-');
-  if (s === 'pending') return 'pill pill--pending';
-  if (s === 'in-progress' || s === 'inprogress') return 'pill pill--in-progress';
-  if (s === 'resolved') return 'pill pill--resolved';
-  if (s === 'rejected') return 'pill pill--rejected';
-  return 'pill pill--default';
-const API_URL = process.env.REACT_APP_API_URL || "https://civic-connect-hams.onrender.com";
-
 const STATUS_COLORS = {
-  pending:     { bg: '#fef3c7', text: '#92400e' },
+  pending:       { bg: '#fef3c7', text: '#92400e' },
   'in-progress': { bg: '#dbeafe', text: '#1e40af' },
-  resolved:    { bg: '#d1fae5', text: '#065f46' },
-  rejected:    { bg: '#fee2e2', text: '#991b1b' }
+  resolved:      { bg: '#d1fae5', text: '#065f46' },
+  rejected:      { bg: '#fee2e2', text: '#991b1b' }
 };
 
 function statusPill(status) {
@@ -39,7 +28,7 @@ function statusPill(status) {
       color: c.text,
       textTransform: 'capitalize'
     }}>
-      {status}
+      {status || 'pending'}
     </span>
   );
 }
@@ -49,7 +38,6 @@ function Dashboard() {
   const [userComplaints, setUserComplaints] = useState([]);
   const [allComplaints, setAllComplaints] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
-  const [filterStatus, setFilterStatus] = useState('');
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const navigate = useNavigate();
@@ -79,7 +67,7 @@ function Dashboard() {
             headers: { Authorization: `Bearer ${getToken()}` },
           }),
         ]);
-        setUserComplaints(userRes.data);
+        setUserComplaints(Array.isArray(userRes.data) ? userRes.data : []);
         setAllComplaints(
           Array.isArray(allRes.data) ? allRes.data : allRes.data.complaints || []
         );
@@ -91,187 +79,15 @@ function Dashboard() {
     fetchData();
   }, [navigate]);
 
-  const filteredComplaints = allComplaints.filter((c) => {
-    const matchSearch =
-      c.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      c.location?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      c.placeName?.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchStatus = filterStatus
-      ? (c.status || '').toLowerCase() === filterStatus.toLowerCase()
-      : true;
-    return matchSearch && matchStatus;
-  });
-
-  const totalMine = userComplaints.length;
-  const resolvedMine = userComplaints.filter(
-    (c) => c.status?.toLowerCase() === 'resolved'
-  ).length;
-  const pendingMine = userComplaints.filter(
-    (c) => c.status?.toLowerCase() === 'pending'
-  ).length;
-
-  return (
-    <Layout>
-      {/* Welcome card */}
-      <div className="welcome-card">
-        <h2>👋 Welcome back, {user.name || 'User'}!</h2>
-        <p>Track and manage your civic complaints all in one place.</p>
-        <button
-          onClick={() => navigate('/submit-complaint')}
-          style={{
-            marginTop: '16px',
-            padding: '10px 22px',
-            background: 'rgba(255,255,255,0.2)',
-            border: '1.5px solid rgba(255,255,255,0.6)',
-            borderRadius: '8px',
-            color: '#fff',
-            fontSize: '14px',
-            fontWeight: '600',
-            cursor: 'pointer',
-          }}
-        >
-          + Submit New Complaint
-        </button>
-      </div>
-
-      {/* Stats row */}
-      <div className="stats-row">
-        <div className="stat-card">
-          <div className="stat-value">{totalMine}</div>
-          <div className="stat-label">My Complaints</div>
-        </div>
-        <div className="stat-card">
-          <div className="stat-value">{pendingMine}</div>
-          <div className="stat-label">Pending</div>
-        </div>
-        <div className="stat-card">
-          <div className="stat-value">{resolvedMine}</div>
-          <div className="stat-label">Resolved</div>
-        </div>
-        <div className="stat-card">
-          <div className="stat-value">{allComplaints.length}</div>
-          <div className="stat-label">Total Community</div>
-        </div>
-      </div>
-
-      {/* My Complaints section */}
-      {userComplaints.length > 0 && (
-        <>
-          <p className="section-heading">My Complaints</p>
-          <p className="section-sub">Complaints you have submitted</p>
-          <div className="complaint-grid">
-            {userComplaints.map((c) => (
-              <div
-                key={c._id}
-                className="complaint-card"
-                onClick={() => navigate(`/complaints/${c._id}`)}
-              >
-                {c.imageUrl && (
-                  <img
-                    src={getImageSrc(c.imageUrl)}
-                    alt="complaint"
-                    className="complaint-card__image"
-                  />
-                )}
-                <p className="complaint-card__title">{c.title}</p>
-                <p className="complaint-card__meta">
-                  📍 {c.placeName || c.location || 'Unknown'} &nbsp;•&nbsp;{' '}
-                  {c.cityName || ''}
-                </p>
-                <p className="complaint-card__desc">{c.description}</p>
-                <div className="complaint-card__footer">
-                  <span className={getStatusClass(c.status)}>{c.status}</span>
-                  <span className="complaint-card__meta">
-                    {new Date(c.createdAt).toLocaleDateString()}
-                  </span>
-                </div>
-                <div onClick={(e) => e.stopPropagation()}>
-                  <LikeButton complaintId={c._id} initialLikes={c.likes || 0} />
-                </div>
-              </div>
-            ))}
-          </div>
-        </>
-      )}
-
-      {/* Search/filter bar */}
-      <p className="section-heading" style={{ marginTop: '36px' }}>
-        Community Complaints
-      </p>
-      <p className="section-sub">Browse all registered civic issues</p>
-      <div className="search-bar-row">
-        <input
-          type="text"
-          className="search-input"
-          placeholder="🔍 Search by title, location..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-        />
-        <select
-          className="filter-select"
-          value={filterStatus}
-          onChange={(e) => setFilterStatus(e.target.value)}
-        >
-          <option value="">All Status</option>
-          <option value="pending">Pending</option>
-          <option value="in-progress">In Progress</option>
-          <option value="resolved">Resolved</option>
-          <option value="rejected">Rejected</option>
-        </select>
-      </div>
-
-      {/* All complaints grid */}
-      {filteredComplaints.length === 0 ? (
-        <div className="card" style={{ textAlign: 'center', padding: '40px', color: '#9ca3af' }}>
-          <div style={{ fontSize: '40px', marginBottom: '12px' }}>🔎</div>
-          <p>No complaints match your search.</p>
-        </div>
-      ) : (
-        <div className="complaint-grid">
-          {filteredComplaints.map((c) => (
-            <div
-              key={c._id}
-              className="complaint-card"
-              onClick={() => navigate(`/complaints/${c._id}`)}
-            >
-              {c.imageUrl && (
-                <img
-                  src={getImageSrc(c.imageUrl)}
-                  alt="complaint"
-                  className="complaint-card__image"
-                />
-              )}
-              <p className="complaint-card__title">{c.title}</p>
-              <p className="complaint-card__meta">
-                📍 {c.placeName || c.location || 'Unknown'}
-                {c.cityName ? ` • ${c.cityName}` : ''}
-              </p>
-              <p className="complaint-card__meta">
-                👤 {c.user?.name || 'Anonymous'}
-              </p>
-              <p className="complaint-card__desc">{c.description}</p>
-              <div className="complaint-card__footer">
-                <span className={getStatusClass(c.status)}>{c.status}</span>
-                <span className="complaint-card__meta">
-                  {new Date(c.createdAt).toLocaleDateString()}
-                </span>
-              </div>
-              <div onClick={(e) => e.stopPropagation()}>
-                <LikeButton complaintId={c._id} initialLikes={c.likes || 0} />
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
-    </Layout>
   const handleLogout = () => {
     localStorage.clear();
     navigate('/login');
   };
 
   const filteredComplaints = allComplaints.filter((c) =>
-    c.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    c.location?.toLowerCase().includes(searchTerm.toLowerCase())
+    c.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    c.location?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    c.placeName?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   return (
@@ -338,8 +154,8 @@ function Dashboard() {
         <div style={s.statsRow}>
           {[
             { label: 'Total Submitted', value: userComplaints.length, icon: '📝', color: '#4f46e5' },
-            { label: 'Pending', value: userComplaints.filter(c => c.status === 'pending').length, icon: '⏳', color: '#f59e0b' },
-            { label: 'Resolved', value: userComplaints.filter(c => c.status === 'resolved').length, icon: '✅', color: '#10b981' }
+            { label: 'Pending', value: userComplaints.filter(c => (c.status || '').toLowerCase() === 'pending').length, icon: '⏳', color: '#f59e0b' },
+            { label: 'Resolved', value: userComplaints.filter(c => (c.status || '').toLowerCase() === 'resolved').length, icon: '✅', color: '#10b981' }
           ].map(stat => (
             <div key={stat.label} style={s.statCard}>
               <div style={{ ...s.statIcon, color: stat.color }}>{stat.icon}</div>
@@ -355,9 +171,13 @@ function Dashboard() {
             <h3 style={s.sectionTitle}>My Complaints</h3>
             <div style={s.cardGrid}>
               {userComplaints.map(c => (
-                <div key={c._id} style={s.complaintCard}>
+                <div
+                  key={c._id}
+                  style={s.complaintCard}
+                  onClick={() => navigate(`/complaints/${c._id}`)}
+                >
                   {c.imageUrl && (
-                    <div className="cc-card-img-wrap" style={s.cardImgWrap}>
+                    <div style={s.cardImgWrap}>
                       <img src={getImageSrc(c.imageUrl)} alt="complaint" style={s.cardImg} />
                     </div>
                   )}
@@ -372,7 +192,9 @@ function Dashboard() {
                       <span>🗂️ {c.category}</span>
                       <span>📅 {new Date(c.createdAt).toLocaleDateString()}</span>
                     </div>
-                    <LikeButton complaintId={c._id} initialLikes={c.likes || 0} />
+                    <div onClick={(e) => e.stopPropagation()}>
+                      <LikeButton complaintId={c._id} initialLikes={Array.isArray(c.likes) ? c.likes.length : (c.likes || 0)} />
+                    </div>
                   </div>
                 </div>
               ))}
@@ -405,9 +227,13 @@ function Dashboard() {
           ) : (
             <div style={s.cardGrid}>
               {filteredComplaints.map(c => (
-                <div key={c._id} style={s.complaintCard}>
+                <div
+                  key={c._id}
+                  style={s.complaintCard}
+                  onClick={() => navigate(`/complaints/${c._id}`)}
+                >
                   {c.imageUrl && (
-                    <div className="cc-card-img-wrap" style={s.cardImgWrap}>
+                    <div style={s.cardImgWrap}>
                       <img src={getImageSrc(c.imageUrl)} alt="complaint" style={s.cardImg} />
                     </div>
                   )}
@@ -418,12 +244,13 @@ function Dashboard() {
                     </div>
                     <p style={s.cardDesc}>{c.description}</p>
                     <div style={s.cardMeta}>
-                      <span>👤 {c.user?.name || 'Unknown'}</span>
+                      <span>👤 {c.user?.name || 'Anonymous'}</span>
                       <span>📍 {c.cityName || c.location}</span>
                       <span>🗂️ {c.category}</span>
                     </div>
-                    <LikeButton complaintId={c._id} />
-                    <CommentSection complaintId={c._id} />
+                    <div onClick={(e) => e.stopPropagation()}>
+                      <LikeButton complaintId={c._id} initialLikes={Array.isArray(c.likes) ? c.likes.length : (c.likes || 0)} />
+                    </div>
                   </div>
                 </div>
               ))}
@@ -444,7 +271,6 @@ const s = {
     backgroundColor: '#f1f5f9',
     fontFamily: "'Segoe UI', system-ui, -apple-system, sans-serif"
   },
-  /* Sidebar */
   sidebar: {
     width: SIDEBAR_WIDTH,
     minWidth: SIDEBAR_WIDTH,
@@ -553,7 +379,6 @@ const s = {
     fontWeight: '600',
     cursor: 'pointer'
   },
-  /* Main */
   main: {
     flex: 1,
     overflowX: 'hidden',
@@ -574,7 +399,6 @@ const s = {
     cursor: 'pointer',
     padding: '4px'
   },
-  /* Welcome */
   welcomeCard: {
     background: 'linear-gradient(135deg, #4f46e5, #7c3aed)',
     borderRadius: '16px',
@@ -607,7 +431,6 @@ const s = {
     fontSize: '14px',
     cursor: 'pointer'
   },
-  /* Stats */
   statsRow: {
     display: 'flex',
     gap: '16px',
@@ -625,7 +448,6 @@ const s = {
   statIcon: { fontSize: '22px', marginBottom: '8px' },
   statValue: { fontSize: '28px', fontWeight: '700', marginBottom: '4px' },
   statLabel: { fontSize: '12px', color: '#6b7280', fontWeight: '500' },
-  /* Section */
   section: { marginBottom: '32px' },
   sectionHeader: {
     display: 'flex',
@@ -661,7 +483,6 @@ const s = {
     backgroundColor: 'transparent',
     color: '#1f2937'
   },
-  /* Card grid */
   cardGrid: {
     display: 'flex',
     flexDirection: 'column',
@@ -673,7 +494,8 @@ const s = {
     overflow: 'hidden',
     boxShadow: '0 2px 12px rgba(0,0,0,0.06)',
     display: 'flex',
-    gap: 0
+    cursor: 'pointer',
+    transition: 'box-shadow 0.2s'
   },
   cardImgWrap: {
     width: '160px',

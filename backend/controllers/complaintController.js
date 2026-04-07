@@ -135,7 +135,7 @@ exports.addComplaint = async (req, res) => {
       category,
       imageUrl,
       imagePublicId,
-      location: locationName,
+      location: locationName || location || 'Unknown',
       placeName,
       areaName,
       cityName,
@@ -143,7 +143,8 @@ exports.addComplaint = async (req, res) => {
         lat: parseFloat(lat),
         lng: parseFloat(lng)
       },
-      createdBy: req.userId,
+      user: req.user._id,
+      createdBy: req.user._id,
       date: new Date()
     });
 

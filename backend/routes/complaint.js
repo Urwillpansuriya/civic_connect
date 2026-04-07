@@ -80,7 +80,9 @@ router.get('/', async (req, res) => {
 });
 
 // ✅ Admin Status Update  (must be before /:id)
+// Support both /status/:id (legacy) and /:id/status (REST convention)
 router.patch('/status/:id', authMiddleware, updateComplaintStatus);
+router.patch('/:id/status', authMiddleware, updateComplaintStatus);
 
 // ✅ Upvote / Unvote Complaint
 router.post('/:id/upvote', authMiddleware, async (req, res) => {
