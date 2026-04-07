@@ -1236,7 +1236,7 @@ function PublicDashboard() {
     setFilterStatus(prev => (prev === status ? '' : status));
   };
 
-  const handleCardClick = (id) => navigate(`/complaints/${id}`);
+  // const handleCardClick = (id) => navigate(`/complaints/${id}`);
 
   const localCounts = useMemo(() =>
     complaints.reduce((acc, c) => {
@@ -1447,9 +1447,9 @@ function PublicDashboard() {
           </div>
         ) : (
           <div className="pd-grid" style={s.grid}>
-            {/* {complaints.map(c => (
-              <ComplaintCard key={c._id} complaint={c} onClick={handleCardClick} />
-            ))} */}
+            {complaints.map(c => (
+              <ComplaintCard/>
+            ))}
           </div>
         )}
 
