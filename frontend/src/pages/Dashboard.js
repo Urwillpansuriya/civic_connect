@@ -155,7 +155,7 @@ function Dashboard() {
               <div
                 key={c._id}
                 className="complaint-card"
-                onClick={() => navigate(`/complaints/${c._id}`)}
+                // onClick={() => navigate(`/complaints/${c._id}`)}
               >
                 {c.imageUrl && (
                   <img
@@ -176,9 +176,9 @@ function Dashboard() {
                     {new Date(c.createdAt).toLocaleDateString()}
                   </span>
                 </div>
-                <div onClick={(e) => e.stopPropagation()}>
+                {/* <div onClick={(e) => e.stopPropagation()}>
                   <LikeButton complaintId={c._id} initialLikes={c.likes || 0} />
-                </div>
+                </div> */}
               </div>
             ))}
           </div>
