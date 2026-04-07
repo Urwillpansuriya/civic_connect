@@ -4,9 +4,9 @@ import { useNavigate, useLocation } from 'react-router-dom';
 const NAV_ITEMS = [
   { label: 'Dashboard', path: '/dashboard', icon: '🏠' },
   { label: 'Submit Complaint', path: '/submit-complaint', icon: '📝' },
-  { label: 'My Complaints', path: '/complaints', icon: '📋' },
+  { label: 'All Complaints', path: '/complaints', icon: '📋' },
   { label: 'Map View', path: '/map-view', icon: '🗺️' },
-  { label: 'Search', path: '/search', icon: '🔍' },
+  // { label: 'Search', path: '/search', icon: '🔍' },
 ];
 
 function Sidebar() {

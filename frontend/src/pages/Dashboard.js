@@ -103,7 +103,7 @@ function Dashboard() {
       <div className="stats-row">
         <div className="stat-card">
           <div className="stat-value">{totalMine}</div>
-          <div className="stat-label">All Complaints</div>
+          <div className="stat-label">My Complaints</div>
         </div>
         <div className="stat-card">
           <div className="stat-value">{pendingMine}</div>
