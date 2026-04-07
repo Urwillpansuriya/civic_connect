@@ -1156,21 +1156,21 @@ function ComplaintCard({ complaint, onClick }) {
               </span>
             </span>
           )}
-          {Array.isArray(c.likes) && c.likes.length > 0 && (
+          {/* {Array.isArray(c.likes) && c.likes.length > 0 && (
             <span style={s.cardInfo}>
               <span style={s.infoIcon}>👍</span>
               <span>{c.likes.length}</span>
             </span>
-          )}
+          )} */}
         </div>
 
-        <button
+        {/* <button
           className="pd-view-btn"
           onClick={(e) => { e.stopPropagation(); onClick(c._id); }}
           aria-label={`View details for ${c.title}`}
         >
           View Details →
-        </button>
+        </button> */}
       </div>
     </article>
   );
