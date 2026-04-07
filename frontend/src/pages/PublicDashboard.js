@@ -1236,7 +1236,7 @@ function PublicDashboard() {
     setFilterStatus(prev => (prev === status ? '' : status));
   };
 
-  // const handleCardClick = (id) => navigate(`/complaints/${id}`);
+  const handleCardClick = (id) => navigate(``);
 
   const localCounts = useMemo(() =>
     complaints.reduce((acc, c) => {
