@@ -154,7 +154,7 @@ function Dashboard() {
               <div
                 key={c._id}
                 className="complaint-card"
-                onClick={() => navigate(`/complaints/${c._id}`)}
+                // onClick={() => navigate(`/complaints/${c._id}`)}
                 tabIndex={0}
                 role="button"
                 aria-label={`View details for: ${c.title}`}
@@ -201,7 +201,7 @@ function Dashboard() {
             <div
               key={c._id}
               className="complaint-card"
-              onClick={() => navigate(`/complaints/${c._id}`)}
+              // onClick={() => navigate(`/complaints/${c._id}`)}
               tabIndex={0}
               role="button"
               aria-label={`View details for: ${c.title}`}

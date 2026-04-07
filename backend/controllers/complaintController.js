@@ -185,7 +185,7 @@ exports.getMyComplaints = async (req, res) => {
 // ✅ Get All Complaints (With optional filtering and pagination)
 exports.getAllComplaints = async (req, res) => {
   try {
-    const { status, location, sort, category, page = 1, limit = 5 } = req.query;
+    const { status, location, sort, category, page = 1, limit = 8 } = req.query;
     const pageNum = parseInt(page);
     const limitNum = parseInt(limit);
     const skip = (pageNum - 1) * limitNum;

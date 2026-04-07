@@ -73,8 +73,8 @@ function ComplaintMap() {
 
       <div style={mapContainerStyle}>
         <MapContainer
-          center={[21.17, 72.83]} // Surat default
-          zoom={12}
+          center={[20.5937, 78.9629]} // India default
+          zoom={5}
           scrollWheelZoom={true}
           style={{ height: '100%', width: '100%' }}
         >

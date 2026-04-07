@@ -37,7 +37,7 @@ function ComplaintList() {
     try {
       setLoading(true);
       const res = await axios.get(
-        `${API_URL}/api/complaints/all?page=${page}&limit=10`,
+        `${API_URL}/api/complaints/all?page=${page}&limit=12`,
         { headers: { Authorization: `Bearer ${getToken()}` } }
       );
       setComplaints(res.data.complaints);
