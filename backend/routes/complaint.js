@@ -15,8 +15,17 @@ const Complaint = require('../models/Complaint');
    NOTE: Static/named routes must be defined BEFORE parameterised /:id routes
 ---------------------------------- */
 
-// ✅ Submit Complaint
-router.post('/add', authMiddleware, upload.single('image'), submitComplaint);
+// ✅ Submit Complaint - wrap upload in error handler so Cloudinary failures don't return a generic 500
+router.post('/add', authMiddleware, (req, res, next) => {
+  upload.single('image')(req, res, (err) => {
+    if (err) {
+      // Multer/Cloudinary error: log it but continue without image
+      console.warn('⚠️ Image upload error (continuing without image):', err.message);
+      req.file = null;
+    }
+    next();
+  });
+}, submitComplaint);
 
 // ✅ Get Complaints of Logged-in User
 router.get('/mine', authMiddleware, async (req, res) => {
@@ -80,6 +89,8 @@ router.get('/', async (req, res) => {
 });
 
 // ✅ Admin Status Update  (must be before /:id)
+// Support both route patterns: PATCH /:id/status and PATCH /status/:id
+router.patch('/:id/status', authMiddleware, updateComplaintStatus);
 router.patch('/status/:id', authMiddleware, updateComplaintStatus);
 
 // ✅ Upvote / Unvote Complaint
