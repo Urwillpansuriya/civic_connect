@@ -119,7 +119,33 @@ function Dashboard() {
         </div>
       </div>
 
-      {/* My Complaints section */}
+
+      {/* Search/filter bar */}
+      {/* <p className="section-heading" style={{ marginTop: '36px' }}>
+        Community Complaints
+      </p> */}
+      {/* <p className="section-sub">Browse all registered civic issues</p> */}
+      <div className="search-bar-row">
+        <input
+          type="text"
+          className="search-input"
+          placeholder="🔍 Search by title, location..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+        />
+        <select
+          className="filter-select"
+          value={filterStatus}
+          onChange={(e) => setFilterStatus(e.target.value)}
+        >
+          <option value="">All Status</option>
+          <option value="pending">Pending</option>
+          <option value="in-progress">In Progress</option>
+          <option value="resolved">Resolved</option>
+          <option value="rejected">Rejected</option>
+        </select>
+      </div>
+{/* My Complaints section */}
       {userComplaints.length > 0 && (
         <>
           <p className="section-heading">My Complaints</p>
@@ -158,35 +184,8 @@ function Dashboard() {
           </div>
         </>
       )}
-
-      {/* Search/filter bar */}
-      <p className="section-heading" style={{ marginTop: '36px' }}>
-        Community Complaints
-      </p>
-      <p className="section-sub">Browse all registered civic issues</p>
-      <div className="search-bar-row">
-        <input
-          type="text"
-          className="search-input"
-          placeholder="🔍 Search by title, location..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-        />
-        <select
-          className="filter-select"
-          value={filterStatus}
-          onChange={(e) => setFilterStatus(e.target.value)}
-        >
-          <option value="">All Status</option>
-          <option value="pending">Pending</option>
-          <option value="in-progress">In Progress</option>
-          <option value="resolved">Resolved</option>
-          <option value="rejected">Rejected</option>
-        </select>
-      </div>
-
       {/* All complaints grid */}
-      {filteredComplaints.length === 0 ? (
+      {/* {filteredComplaints.length === 0 ? (
         <div className="card" style={{ textAlign: 'center', padding: '40px', color: '#9ca3af' }}>
           <div style={{ fontSize: '40px', marginBottom: '12px' }}>🔎</div>
           <p>No complaints match your search.</p>
@@ -227,7 +226,7 @@ function Dashboard() {
             </div>
           ))}
         </div>
-      )}
+      )} */}
     </Layout>
   );
 }
