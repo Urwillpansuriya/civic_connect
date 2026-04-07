@@ -1164,13 +1164,13 @@ function ComplaintCard({ complaint, onClick }) {
           )}
         </div>
 
-        <button
+        {/* <button
           className="pd-view-btn"
           onClick={(e) => { e.stopPropagation(); onClick(c._id); }}
           aria-label={`View details for ${c.title}`}
         >
           View Details →
-        </button>
+        </button> */}
       </div>
     </article>
   );
@@ -1370,8 +1370,8 @@ function PublicDashboard() {
             </p>
           </div>
 
-          <div className="pd-search-wrap">
-            <span className="pd-search-icon">🔍</span>
+          {/* <div className="pd-search-wrap"> */}
+            {/* <span className="pd-search-icon">🔍</span>
             <input
               className="pd-search-input"
               type="text"
@@ -1379,8 +1379,8 @@ function PublicDashboard() {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               aria-label="Search complaints"
-            />
-          </div>
+            /> */}
+          {/* </div> */}
         </div>
 
         {/* Active filter chips */}
