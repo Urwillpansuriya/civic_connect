@@ -1338,7 +1338,7 @@ function PublicDashboard() {
                   cursor: isClickable ? 'pointer' : 'default',
                   background: isActive ? '#f7f6f3' : '#fff',
                 }}
-                onClick={isClickable ? () => handleFilterChange(key) : undefined}
+                // onClick={isClickable ? () => handleFilterChange(key) : undefined}
                 role={isClickable ? 'button' : undefined}
                 aria-pressed={isClickable ? isActive : undefined}
                 tabIndex={isClickable ? 0 : undefined}
@@ -1447,9 +1447,9 @@ function PublicDashboard() {
           </div>
         ) : (
           <div className="pd-grid" style={s.grid}>
-            {complaints.map(c => (
+            {/* {complaints.map(c => (
               <ComplaintCard key={c._id} complaint={c} onClick={handleCardClick} />
-            ))}
+            ))} */}
           </div>
         )}
 
