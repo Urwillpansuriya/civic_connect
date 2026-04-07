@@ -1261,7 +1261,6 @@ function PublicDashboard() {
 
   return (
     <div style={s.root}>
-
       {/* ── Navbar ── */}
       <header style={s.navbar}>
         <div style={s.navInner}>
@@ -1270,15 +1269,25 @@ function PublicDashboard() {
               <span style={s.brandLogoIcon}>🏛️</span>
             </div>
             <div>
-              <span className="pd-brand-text" style={s.brandText}>CivicConnect</span>
+              <span className="pd-brand-text" style={s.brandText}>
+                CivicConnect
+              </span>
               <span style={s.brandTagline}>Community Portal</span>
             </div>
           </div>
           <nav className="pd-nav-links" style={s.navLinks}>
-            <button className="pd-nav-link-btn" style={s.navLinkBtn} onClick={() => navigate('/login')}>
+            <button
+              className="pd-nav-link-btn"
+              style={s.navLinkBtn}
+              onClick={() => navigate("/login")}
+            >
               Sign In
             </button>
-            <button className="pd-nav-cta" style={s.navCta} onClick={() => navigate('/register')}>
+            <button
+              className="pd-nav-cta"
+              style={s.navCta}
+              onClick={() => navigate("/register")}
+            >
               Join Now
             </button>
           </nav>
@@ -1297,18 +1306,27 @@ function PublicDashboard() {
             Community Dashboard
           </div>
           <h1 style={s.heroTitle}>
-            Your Community,<br />
+            Your Community,
+            <br />
             <em style={s.heroTitleEm}>Your Voice</em>
           </h1>
           <p style={s.heroSub}>
-            Track civic issues, monitor progress, and see your community come together.
-            Transparent governance starts here.
+            Track civic issues, monitor progress, and see your community come
+            together. Transparent governance starts here.
           </p>
           <div className="pd-hero-actions" style={s.heroActions}>
-            <button className="pd-hero-primary" style={s.heroPrimaryBtn} onClick={() => navigate('/register')}>
+            <button
+              className="pd-hero-primary"
+              style={s.heroPrimaryBtn}
+              onClick={() => navigate("/register")}
+            >
               🚩 Report an Issue
             </button>
-            <button className="pd-hero-secondary" style={s.heroSecondaryBtn} onClick={() => navigate('/login')}>
+            <button
+              className="pd-hero-secondary"
+              style={s.heroSecondaryBtn}
+              onClick={() => navigate("/login")}
+            >
               📊 View My Reports
             </button>
           </div>
@@ -1316,8 +1334,17 @@ function PublicDashboard() {
 
         {/* Bottom wave divider */}
         <div style={s.heroWave} aria-hidden="true">
-          <svg viewBox="0 0 1440 80" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none" style={{ display: 'block', width: '100%', height: '80px' }}>
-            <path d="M0,40 C360,80 1080,0 1440,40 L1440,80 L0,80 Z" fill="#faf8f4"/>
+          <svg
+            viewBox="0 0 1440 80"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+            preserveAspectRatio="none"
+            style={{ display: "block", width: "100%", height: "80px" }}
+          >
+            <path
+              d="M0,40 C360,80 1080,0 1440,40 L1440,80 L0,80 Z"
+              fill="#faf8f4"
+            />
           </svg>
         </div>
       </section>
@@ -1326,28 +1353,41 @@ function PublicDashboard() {
       <section style={s.statsSection}>
         <div className="pd-stats-grid" style={s.statsGrid}>
           {statsData.map(({ key, color, icon, count, label }) => {
-            const isActive    = filterStatus === key && key !== '';
-            const isClickable = key !== '';
+            const isActive = filterStatus === key && key !== "";
+            const isClickable = key !== "";
             return (
               <div
-                key={key || 'total'}
-                className={`pd-stat-card${isActive ? ' pd-stat-card--active' : ''}`}
+                key={key || "total"}
+                className={`pd-stat-card${isActive ? " pd-stat-card--active" : ""}`}
                 style={{
                   ...s.statCard,
                   borderLeft: `4px solid ${color}`,
-                  cursor: isClickable ? 'pointer' : 'default',
-                  background: isActive ? '#f7f6f3' : '#fff',
+                  cursor: isClickable ? "pointer" : "default",
+                  background: isActive ? "#f7f6f3" : "#fff",
                 }}
-                onClick={isClickable ? () => handleFilterChange(key) : undefined}
-                role={isClickable ? 'button' : undefined}
+                onClick={
+                  isClickable ? () => handleFilterChange(key) : undefined
+                }
+                role={isClickable ? "button" : undefined}
                 aria-pressed={isClickable ? isActive : undefined}
                 tabIndex={isClickable ? 0 : undefined}
-                onKeyDown={isClickable ? (e) => { if (e.key === 'Enter' || e.key === ' ') handleFilterChange(key); } : undefined}
+                onKeyDown={
+                  isClickable
+                    ? (e) => {
+                        if (e.key === "Enter" || e.key === " ")
+                          handleFilterChange(key);
+                      }
+                    : undefined
+                }
               >
                 <div style={s.statIcon}>{icon}</div>
-                <div style={{ ...s.statNum, color }}>{count.toLocaleString()}</div>
+                <div style={{ ...s.statNum, color }}>
+                  {count.toLocaleString()}
+                </div>
                 <div style={s.statLabel}>{label}</div>
-                {isActive && <div style={{ ...s.filterActiveDot, background: color }} />}
+                {isActive && (
+                  <div style={{ ...s.filterActiveDot, background: color }} />
+                )}
               </div>
             );
           })}
@@ -1356,7 +1396,6 @@ function PublicDashboard() {
 
       {/* ── Main content ── */}
       <main style={s.main}>
-
         <div className="pd-section-divider" />
 
         <div className="pd-section-top">
@@ -1365,13 +1404,13 @@ function PublicDashboard() {
             <h2 style={s.sectionTitle}>Community Reports</h2>
             <p style={s.sectionSub}>
               {hasActiveFilters
-                ? `Filtered results${totalComplaints ? ` · ${totalComplaints} found` : ''}`
-                : 'Civic issues submitted by residents across the city'}
+                ? `Filtered results${totalComplaints ? ` · ${totalComplaints} found` : ""}`
+                : "Civic issues submitted by residents across the city"}
             </p>
           </div>
 
           {/* <div className="pd-search-wrap"> */}
-            {/* <span className="pd-search-icon">🔍</span>
+          {/* <span className="pd-search-icon">🔍</span>
             <input
               className="pd-search-input"
               type="text"
@@ -1385,29 +1424,34 @@ function PublicDashboard() {
 
         {/* Active filter chips */}
         {hasActiveFilters && (
-          <div className="pd-filter-bar" style={{ marginBottom: '24px' }}>
+          <div className="pd-filter-bar" style={{ marginBottom: "24px" }}>
             {filterStatus && (
               <button
                 className="pd-filter-chip pd-filter-chip--active"
-                style={{ background: '#eff6ff', color: '#1e40af' }}
-                onClick={() => setFilterStatus('')}
+                style={{ background: "#eff6ff", color: "#1e40af" }}
+                onClick={() => setFilterStatus("")}
               >
-                {STATUS_CONFIG[filterStatus]?.icon} {STATUS_CONFIG[filterStatus]?.label || filterStatus} ✕
+                {STATUS_CONFIG[filterStatus]?.icon}{" "}
+                {STATUS_CONFIG[filterStatus]?.label || filterStatus} ✕
               </button>
             )}
             {debouncedSearch && (
               <button
                 className="pd-filter-chip pd-filter-chip--active"
-                style={{ background: '#f0fdf4', color: '#166534' }}
-                onClick={() => setSearchQuery('')}
+                style={{ background: "#f0fdf4", color: "#166534" }}
+                onClick={() => setSearchQuery("")}
               >
                 🔍 "{debouncedSearch}" ✕
               </button>
             )}
             <button
               className="pd-filter-chip"
-              style={{ background: '#f7f6f3', color: '#5c5752' }}
-              onClick={() => { setFilterStatus(''); setSearchQuery(''); setCurrentPage(1); }}
+              style={{ background: "#f7f6f3", color: "#5c5752" }}
+              onClick={() => {
+                setFilterStatus("");
+                setSearchQuery("");
+                setCurrentPage(1);
+              }}
             >
               Clear all
             </button>
@@ -1417,14 +1461,18 @@ function PublicDashboard() {
         {/* Grid / States */}
         {loading ? (
           <div className="pd-grid" style={s.grid}>
-            {Array.from({ length: 6 }).map((_, i) => <SkeletonCard key={i} />)}
+            {Array.from({ length: 6 }).map((_, i) => (
+              <SkeletonCard key={i} />
+            ))}
           </div>
         ) : error ? (
           <div style={s.emptyState}>
             <div style={s.emptyIcon}>⚠️</div>
             <h3 style={s.emptyTitle}>Something went wrong</h3>
             <p style={s.emptySub}>{error}</p>
-            <button style={s.heroPrimaryBtn} onClick={fetchComplaints}>Retry</button>
+            <button style={s.heroPrimaryBtn} onClick={fetchComplaints}>
+              Retry
+            </button>
           </div>
         ) : complaints.length === 0 ? (
           <div style={s.emptyState}>
@@ -1432,23 +1480,36 @@ function PublicDashboard() {
             <h3 style={s.emptyTitle}>No reports found</h3>
             <p style={s.emptySub}>
               {hasActiveFilters
-                ? 'No complaints match your current filters. Try adjusting your search.'
-                : 'Be the first to report a civic issue in your community!'}
+                ? "No complaints match your current filters. Try adjusting your search."
+                : "Be the first to report a civic issue in your community!"}
             </p>
             {hasActiveFilters ? (
-              <button style={s.heroPrimaryBtn} onClick={() => { setFilterStatus(''); setSearchQuery(''); }}>
+              <button
+                style={s.heroPrimaryBtn}
+                onClick={() => {
+                  setFilterStatus("");
+                  setSearchQuery("");
+                }}
+              >
                 Clear Filters
               </button>
             ) : (
-              <button style={s.heroPrimaryBtn} onClick={() => navigate('/register')}>
+              <button
+                style={s.heroPrimaryBtn}
+                onClick={() => navigate("/register")}
+              >
                 Submit a Report
               </button>
             )}
           </div>
         ) : (
           <div className="pd-grid" style={s.grid}>
-            {complaints.map(c => (
-              <ComplaintCard/>
+            {complaints.map((c) => (
+              <ComplaintCard
+                key={c._id}
+                complaint={c}
+                onClick={handleCardClick}
+              />
             ))}
           </div>
         )}
@@ -1468,11 +1529,27 @@ function PublicDashboard() {
             <div style={s.pageNumbers}>
               {(() => {
                 const start = Math.max(1, currentPage - PAGE_WINDOW_SIZE);
-                const end   = Math.min(totalPages, currentPage + PAGE_WINDOW_SIZE);
+                const end = Math.min(
+                  totalPages,
+                  currentPage + PAGE_WINDOW_SIZE,
+                );
                 const pages = [];
                 if (start > 1) {
-                  pages.push(<button key={1} onClick={() => handlePageChange(1)} style={s.pageNum}>1</button>);
-                  if (start > 2) pages.push(<span key="s-el" style={s.pageEllipsis}>…</span>);
+                  pages.push(
+                    <button
+                      key={1}
+                      onClick={() => handlePageChange(1)}
+                      style={s.pageNum}
+                    >
+                      1
+                    </button>,
+                  );
+                  if (start > 2)
+                    pages.push(
+                      <span key="s-el" style={s.pageEllipsis}>
+                        …
+                      </span>,
+                    );
                 }
                 for (let p = start; p <= end; p++) {
                   pages.push(
@@ -1480,18 +1557,27 @@ function PublicDashboard() {
                       key={p}
                       onClick={() => handlePageChange(p)}
                       style={currentPage === p ? s.pageNumActive : s.pageNum}
-                      aria-current={currentPage === p ? 'page' : undefined}
+                      aria-current={currentPage === p ? "page" : undefined}
                     >
                       {p}
-                    </button>
+                    </button>,
                   );
                 }
                 if (end < totalPages) {
-                  if (end < totalPages - 1) pages.push(<span key="e-el" style={s.pageEllipsis}>…</span>);
+                  if (end < totalPages - 1)
+                    pages.push(
+                      <span key="e-el" style={s.pageEllipsis}>
+                        …
+                      </span>,
+                    );
                   pages.push(
-                    <button key={totalPages} onClick={() => handlePageChange(totalPages)} style={s.pageNum}>
+                    <button
+                      key={totalPages}
+                      onClick={() => handlePageChange(totalPages)}
+                      style={s.pageNum}
+                    >
                       {totalPages}
-                    </button>
+                    </button>,
                   );
                 }
                 return pages;
@@ -1511,7 +1597,9 @@ function PublicDashboard() {
 
         {totalPages > 1 && !loading && (
           <p style={s.pageInfo}>
-            Page {currentPage} of {totalPages} · {totalComplaints.toLocaleString()} total report{totalComplaints !== 1 ? 's' : ''}
+            Page {currentPage} of {totalPages} ·{" "}
+            {totalComplaints.toLocaleString()} total report
+            {totalComplaints !== 1 ? "s" : ""}
           </p>
         )}
       </main>
@@ -1521,25 +1609,46 @@ function PublicDashboard() {
         <div style={s.footerInner}>
           <div style={s.footerTop}>
             <div style={s.footerBrand}>
-              <span style={{ fontSize: '22px' }}>🏛️</span>
+              <span style={{ fontSize: "22px" }}>🏛️</span>
               <div>
                 <div style={s.footerBrandText}>CivicConnect</div>
                 <div style={s.footerBrandSub}>Community Portal</div>
               </div>
             </div>
             <p style={s.footerText}>
-              Empowering communities through transparent civic engagement and open governance.
+              Empowering communities through transparent civic engagement and
+              open governance.
             </p>
           </div>
           <div style={s.footerDivider} />
           <div style={s.footerBottom}>
-            <p style={s.footerCopy}>© {new Date().getFullYear()} CivicConnect. All rights reserved.</p>
+            <p style={s.footerCopy}>
+              © {new Date().getFullYear()} CivicConnect. All rights reserved.
+            </p>
             <div style={s.footerLinks}>
-              <button className="pd-footer-link" style={s.footerLink} onClick={() => navigate('/login')}>Sign In</button>
+              <button
+                className="pd-footer-link"
+                style={s.footerLink}
+                onClick={() => navigate("/login")}
+              >
+                Sign In
+              </button>
               <span style={s.footerSep}>·</span>
-              <button className="pd-footer-link" style={s.footerLink} onClick={() => navigate('/register')}>Register</button>
+              <button
+                className="pd-footer-link"
+                style={s.footerLink}
+                onClick={() => navigate("/register")}
+              >
+                Register
+              </button>
               <span style={s.footerSep}>·</span>
-              <button className="pd-footer-link" style={s.footerLink} onClick={() => navigate('/admin-login')}>Admin</button>
+              <button
+                className="pd-footer-link"
+                style={s.footerLink}
+                onClick={() => navigate("/admin-login")}
+              >
+                Admin
+              </button>
             </div>
           </div>
         </div>
