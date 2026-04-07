@@ -75,6 +75,11 @@ function AdminLogin() {
           <p style={styles.backLink}>
             <span onClick={() => navigate('/login')} style={styles.backLinkText}>← Back to User Login</span>
           </p>
+          <p style={{ ...styles.backLink, marginTop: '6px' }}>
+            <span onClick={() => navigate('/')} style={{ ...styles.backLinkText, color: '#9ca3af', fontWeight: '500' }}>
+              🌐 View Public Dashboard
+            </span>
+          </p>
         </div>
       </div>
 
@@ -98,13 +103,15 @@ function AdminLogin() {
 const styles = {
   page: {
     minHeight: '100vh',
-    background: 'linear-gradient(135deg, #1e1b4b 0%, #4f46e5 50%, #7c3aed 100%)',
+    background: 'linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%)',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
     padding: '20px',
     fontFamily: "'Segoe UI', system-ui, -apple-system, sans-serif",
-    boxSizing: 'border-box'
+    boxSizing: 'border-box',
+    position: 'relative',
+    overflow: 'hidden',
   },
   card: {
     backgroundColor: '#fff',
