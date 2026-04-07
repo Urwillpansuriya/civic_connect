@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getToken, isAuthenticated } from '../utils/auth';
 import axios from 'axios';
-import LikeButton from '../components/LikeButton';
 import getImageSrc from '../utils/image';
 import Layout from '../components/Layout';
 
@@ -155,7 +154,11 @@ function Dashboard() {
               <div
                 key={c._id}
                 className="complaint-card"
-                // onClick={() => navigate(`/complaints/${c._id}`)}
+                onClick={() => navigate(`/complaints/${c._id}`)}
+                tabIndex={0}
+                role="button"
+                aria-label={`View details for: ${c.title}`}
+                onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); navigate(`/complaints/${c._id}`); } }}
               >
                 {c.imageUrl && (
                   <img
@@ -185,7 +188,9 @@ function Dashboard() {
         </>
       )}
       {/* All complaints grid */}
-      {/* {filteredComplaints.length === 0 ? (
+      <p className="section-heading" style={{ marginTop: '28px' }}>Community Complaints</p>
+      <p className="section-sub">Browse all registered civic issues</p>
+      {filteredComplaints.length === 0 ? (
         <div className="card" style={{ textAlign: 'center', padding: '40px', color: '#9ca3af' }}>
           <div style={{ fontSize: '40px', marginBottom: '12px' }}>🔎</div>
           <p>No complaints match your search.</p>
@@ -197,6 +202,10 @@ function Dashboard() {
               key={c._id}
               className="complaint-card"
               onClick={() => navigate(`/complaints/${c._id}`)}
+              tabIndex={0}
+              role="button"
+              aria-label={`View details for: ${c.title}`}
+              onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); navigate(`/complaints/${c._id}`); } }}
             >
               {c.imageUrl && (
                 <img
@@ -220,13 +229,10 @@ function Dashboard() {
                   {new Date(c.createdAt).toLocaleDateString()}
                 </span>
               </div>
-              <div onClick={(e) => e.stopPropagation()}>
-                <LikeButton complaintId={c._id} initialLikes={c.likes || 0} />
-              </div>
             </div>
           ))}
         </div>
-      )} */}
+      )}
     </Layout>
   );
 }

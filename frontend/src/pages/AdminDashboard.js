@@ -230,7 +230,13 @@ function AdminDashboard() {
                 <React.Fragment key={c._id}>
                   <tr style={s.tr}>
                     <td style={s.td}>
-                      <span style={{ fontWeight: '600', color: '#1f2937' }}>{c.title}</span>
+                      <span
+                        style={{ fontWeight: '600', color: '#4f46e5', cursor: 'pointer', textDecoration: 'underline' }}
+                        onClick={() => navigate(`/admin/complaints/${c._id}`)}
+                        title="View complaint details"
+                      >
+                        {c.title}
+                      </span>
                     </td>
                     <td style={s.td}>{c.category}</td>
                     <td style={s.td}>{statusPill(c.status)}</td>
