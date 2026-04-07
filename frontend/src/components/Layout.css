@@ -189,7 +189,7 @@ body {
   margin: 0;
 }
 .complaint-card__meta {
-  font-size: 12px;
+  font-size: 15px;
   color: var(--text-light);
 }
 .complaint-card__desc {
