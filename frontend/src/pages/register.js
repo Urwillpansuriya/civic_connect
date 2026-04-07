@@ -30,7 +30,6 @@ function Register() {
   return (
     <div style={styles.page}>
       <div style={styles.card}>
-        {/* Header */}
         <div style={styles.cardHeader}>
           <div style={styles.iconWrap}>
             <span style={{ fontSize: '28px' }}>🏛️</span>
@@ -39,7 +38,6 @@ function Register() {
           <p style={styles.tagline}>Your voice for a better community</p>
         </div>
 
-        {/* Form */}
         <div style={styles.cardBody}>
           <h2 style={styles.heading}>Create Account</h2>
           <p style={styles.subheading}>Join thousands making a difference</p>
@@ -69,7 +67,6 @@ function Register() {
         </div>
       </div>
 
-      {/* Modal */}
       {modal.show && (
         <div style={styles.overlay}>
           <div style={styles.modal}>
@@ -97,8 +94,7 @@ const styles = {
     alignItems: 'center',
     justifyContent: 'center',
     padding: '20px',
-    fontFamily: "'Segoe UI', system-ui, -apple-system, sans-serif",
-    boxSizing: 'border-box'
+    fontFamily: "'Segoe UI', system-ui, sans-serif",
   },
   card: {
     backgroundColor: '#fff',
@@ -151,7 +147,7 @@ const styles = {
   },
   form: {
     display: 'flex',
-    flexDirection: 'column'
+    flexDirection: 'column',
   },
   fieldGroup: {
     display: 'flex',

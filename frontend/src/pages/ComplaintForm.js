@@ -44,7 +44,7 @@ function ComplaintForm() {
       });
   }, []);
 
-  const validateImage = (file, inputEl) => {
+  const validateImage = (file, inputRef) => {
     if (!file.type.match(/^image\/(jpeg|png)$/)) {
       setModal({ show: true, title: 'Invalid File', message: 'Only jpg, jpeg and png images are allowed.' });
       if (inputEl) inputEl.value = '';
@@ -109,6 +109,7 @@ function ComplaintForm() {
 
       const res = await axios.post(`${API_URL}/api/complaints/add`, data, {
         headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'multipart/form-data' }
+        headers: { Authorization: `Bearer ${token}` }
       });
 
       if (res && res.data) {
@@ -120,6 +121,7 @@ function ComplaintForm() {
       console.error('Submission error:', err);
       const msg = err.response?.data?.error || err.response?.data?.message || 'Error submitting complaint. Please try again.';
       setModal({ show: true, title: 'Error', message: msg });
+      setModal({ show: true, title: 'Error', message: err.response?.data?.error || 'Error submitting complaint. Please try again.' });
     } finally {
       setSubmitting(false);
     }
@@ -127,11 +129,9 @@ function ComplaintForm() {
 
   return (
     <div style={s.page}>
-      {/* Back button */}
       <button onClick={() => navigate('/dashboard')} style={s.backBtn}>← Back to Dashboard</button>
 
       <div style={s.container}>
-        {/* Page header */}
         <div style={s.pageHeader}>
           <div style={s.pageHeaderIcon}>📝</div>
           <div>
@@ -284,17 +284,13 @@ function ComplaintForm() {
             </div>
           </div>
 
-          {/* Date info */}
           <p style={s.dateInfo}>📅 Submission date: {new Date().toLocaleDateString()}</p>
-
-          {/* Submit */}
           <button type="submit" disabled={submitting} style={s.submitBtn}>
-            {submitting ? '⏳ Submitting…' : '🚀 Submit Complaint'}
+            {submitting ? 'Submitting…' : '🚀 Submit Complaint'}
           </button>
         </form>
       </div>
 
-      {/* Modal */}
       {modal.show && (
         <div style={s.overlay}>
           <div style={s.modal}>

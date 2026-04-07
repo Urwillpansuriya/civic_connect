@@ -16,6 +16,9 @@ function LikeButton({ complaintId, initialLikes = 0 }) {
     try {
       const res = await axios.post(`${API_URL}/api/complaints/like/${complaintId}`, {}, {
         headers: { Authorization: `Bearer ${token}` }
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('token')}`
+        }
       });
       setLikes(res.data.likes);
       setClicked(!clicked);
@@ -23,6 +26,7 @@ function LikeButton({ complaintId, initialLikes = 0 }) {
       console.error('Like error:', err);
       if (err.response?.status === 401) {
         alert('Please login to like a complaint.');
+        alert('Login required to like a complaint.');
       }
     }
   };
@@ -44,6 +48,18 @@ function LikeButton({ complaintId, initialLikes = 0 }) {
       }}
     >
       👍 {likes}
+    <button onClick={handleLike} style={{
+      backgroundColor: clicked ? '#28a745' : '#eeeeee',
+      color: clicked ? '#fff' : '#333',
+      padding: '6px 14px',
+      border: 'none',
+      borderRadius: '20px',
+      fontSize: '14px',
+      cursor: 'pointer',
+      transition: 'all 0.2s ease-in-out',
+      marginTop: '10px'
+    }}>
+      👍 Like {likes}
     </button>
   );
 }

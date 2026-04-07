@@ -29,7 +29,6 @@ function Login() {
   return (
     <div style={styles.page}>
       <div style={styles.card}>
-        {/* Header */}
         <div style={styles.cardHeader}>
           <div style={styles.iconWrap}>
             <span style={{ fontSize: '28px' }}>🏛️</span>
@@ -38,7 +37,6 @@ function Login() {
           <p style={styles.tagline}>Your voice for a better community</p>
         </div>
 
-        {/* Form */}
         <div style={styles.cardBody}>
           <h2 style={styles.heading}>Welcome Back</h2>
           <p style={styles.subheading}>Sign in to your account</p>
@@ -79,7 +77,6 @@ function Login() {
         </div>
       </div>
 
-      {/* Modal */}
       {modal.show && (
         <div style={styles.overlay}>
           <div style={styles.modal}>
