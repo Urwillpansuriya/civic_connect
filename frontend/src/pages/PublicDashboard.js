@@ -1395,7 +1395,7 @@ function PublicDashboard() {
                 {STATUS_CONFIG[filterStatus]?.icon} {STATUS_CONFIG[filterStatus]?.label || filterStatus} ✕
               </button>
             )}
-            {debouncedSearch && (
+            {/* {debouncedSearch && (
               <button
                 className="pd-filter-chip pd-filter-chip--active"
                 style={{ background: '#f0fdf4', color: '#166534' }}
@@ -1403,7 +1403,7 @@ function PublicDashboard() {
               >
                 🔍 "{debouncedSearch}" ✕
               </button>
-            )}
+            )} */}
             <button
               className="pd-filter-chip"
               style={{ background: '#f7f6f3', color: '#5c5752' }}
@@ -1447,9 +1447,9 @@ function PublicDashboard() {
           </div>
         ) : (
           <div className="pd-grid" style={s.grid}>
-            {complaints.map(c => (
+            {/* {complaints.map(c => (
               <ComplaintCard key={c._id} complaint={c} onClick={handleCardClick} />
-            ))}
+            ))} */}
           </div>
         )}
 
