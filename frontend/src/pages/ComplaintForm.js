@@ -47,12 +47,12 @@ function ComplaintForm() {
   const validateImage = (file, inputRef) => {
     if (!file.type.match(/^image\/(jpeg|png)$/)) {
       setModal({ show: true, title: 'Invalid File', message: 'Only jpg, jpeg and png images are allowed.' });
-      if (inputEl) inputEl.value = '';
+      if (inputRef) inputRef.value = '';
       return false;
     }
     if (file.size > 5 * 1024 * 1024) {
       setModal({ show: true, title: 'File Too Large', message: 'Image must be smaller than 5 MB.' });
-      if (inputEl) inputEl.value = '';
+      if (inputRef) inputRef.value = '';
       return false;
     }
     return true;
@@ -109,7 +109,6 @@ function ComplaintForm() {
 
       const res = await axios.post(`${API_URL}/api/complaints/add`, data, {
         headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'multipart/form-data' }
-        headers: { Authorization: `Bearer ${token}` }
       });
 
       if (res && res.data) {
@@ -121,7 +120,6 @@ function ComplaintForm() {
       console.error('Submission error:', err);
       const msg = err.response?.data?.error || err.response?.data?.message || 'Error submitting complaint. Please try again.';
       setModal({ show: true, title: 'Error', message: msg });
-      setModal({ show: true, title: 'Error', message: err.response?.data?.error || 'Error submitting complaint. Please try again.' });
     } finally {
       setSubmitting(false);
     }
