@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import getImageSrc from '../utils/image';
 
 const API_URL = process.env.REACT_APP_API_URL || 'https://civic-connect-hams.onrender.com';
+const COMPLAINTS_PER_PAGE = 9;
 
 const STATUS_CONFIG = {
   pending:       { bg: '#fef3c7', text: '#92400e', icon: '⏳', label: 'Pending' },
@@ -47,7 +48,7 @@ function PublicDashboard() {
   const fetchComplaints = useCallback(async () => {
     try {
       setLoading(true);
-      const params = new URLSearchParams({ page: currentPage, limit: 9 });
+      const params = new URLSearchParams({ page: currentPage, limit: COMPLAINTS_PER_PAGE });
       if (filterStatus) params.append('status', filterStatus);
       const res = await axios.get(`${API_URL}/api/complaints?${params.toString()}`);
       if (res.data && res.data.complaints) {
@@ -83,9 +84,17 @@ function PublicDashboard() {
     setCurrentPage(1);
   };
 
-  const resolvedCount = statusCounts.resolved || complaints.filter(c => c.status === 'resolved').length;
-  const pendingCount = statusCounts.pending || complaints.filter(c => c.status === 'pending').length;
-  const inProgressCount = statusCounts['in-progress'] || complaints.filter(c => c.status === 'in-progress').length;
+  const localCounts = complaints.reduce(
+    (acc, c) => {
+      const key = (c.status || 'pending').toLowerCase();
+      acc[key] = (acc[key] || 0) + 1;
+      return acc;
+    },
+    {}
+  );
+  const resolvedCount = statusCounts.resolved || localCounts.resolved || 0;
+  const pendingCount = statusCounts.pending || localCounts.pending || 0;
+  const inProgressCount = statusCounts['in-progress'] || localCounts['in-progress'] || 0;
 
   return (
     <div style={s.root}>
@@ -200,7 +209,10 @@ function PublicDashboard() {
                       src={getImageSrc(c.imageUrl)}
                       alt={c.title}
                       style={s.cardImg}
-                      onError={(e) => { e.target.style.display = 'none'; }}
+                      onError={(e) => {
+                        e.target.src = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="180" viewBox="0 0 400 180"><rect fill="%23f1f5f9" width="400" height="180"/><text fill="%23cbd5e1" font-family="sans-serif" font-size="14" x="50%25" y="50%25" text-anchor="middle" dominant-baseline="middle">Image unavailable</text></svg>';
+                        e.target.alt = 'Image unavailable';
+                      }}
                     />
                   </div>
                 )}
@@ -250,19 +262,36 @@ function PublicDashboard() {
               ← Previous
             </button>
             <div style={s.pageNumbers}>
-              {Array.from({ length: Math.min(totalPages, 7) }, (_, i) => {
-                const page = i + 1;
-                return (
-                  <button
-                    key={page}
-                    onClick={() => handlePageChange(page)}
-                    style={currentPage === page ? s.pageNumActive : s.pageNum}
-                  >
-                    {page}
-                  </button>
-                );
-              })}
-              {totalPages > 7 && <span style={s.pageEllipsis}>…</span>}
+              {(() => {
+                const WINDOW = 3;
+                const start = Math.max(1, currentPage - WINDOW);
+                const end = Math.min(totalPages, currentPage + WINDOW);
+                const pages = [];
+                if (start > 1) {
+                  pages.push(
+                    <button key={1} onClick={() => handlePageChange(1)} style={s.pageNum}>1</button>
+                  );
+                  if (start > 2) pages.push(<span key="start-ellipsis" style={s.pageEllipsis}>…</span>);
+                }
+                for (let p = start; p <= end; p++) {
+                  pages.push(
+                    <button
+                      key={p}
+                      onClick={() => handlePageChange(p)}
+                      style={currentPage === p ? s.pageNumActive : s.pageNum}
+                    >
+                      {p}
+                    </button>
+                  );
+                }
+                if (end < totalPages) {
+                  if (end < totalPages - 1) pages.push(<span key="end-ellipsis" style={s.pageEllipsis}>…</span>);
+                  pages.push(
+                    <button key={totalPages} onClick={() => handlePageChange(totalPages)} style={s.pageNum}>{totalPages}</button>
+                  );
+                }
+                return pages;
+              })()}
             </div>
             <button
               onClick={() => handlePageChange(currentPage + 1)}
