@@ -1090,7 +1090,7 @@ function ComplaintCard({ complaint, onClick }) {
     <article
       className="pd-card"
       style={s.card}
-      onClick={() => onClick(c._id)}
+      // onClick={() => onClick(c._id)}
       tabIndex={0}
       role="button"
       aria-label={`View details for: ${c.title}`}
@@ -1365,9 +1365,9 @@ function PublicDashboard() {
                   cursor: isClickable ? "pointer" : "default",
                   background: isActive ? "#f7f6f3" : "#fff",
                 }}
-                onClick={
-                  isClickable ? () => handleFilterChange(key) : undefined
-                }
+                // onClick={
+                //   isClickable ? () => handleFilterChange(key) : undefined
+                // }
                 role={isClickable ? "button" : undefined}
                 aria-pressed={isClickable ? isActive : undefined}
                 tabIndex={isClickable ? 0 : undefined}
