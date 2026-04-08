@@ -20,8 +20,11 @@ function Dashboard() {
   const [user, setUser] = useState({ name: '', email: '' });
   const [userComplaints, setUserComplaints] = useState([]);
   const [allComplaints, setAllComplaints] = useState([]);
+  // FIX: initialise as '' (empty string) so the <select> is a controlled component.
+  // Previously useState() left filterStatus as undefined, causing React to treat
+  // the select as uncontrolled and the status filter had no effect.
   const [searchTerm, setSearchTerm] = useState('');
-  const [filterStatus, setFilterStatus] = useState();
+  const [filterStatus, setFilterStatus] = useState('');
 
   const navigate = useNavigate();
 
@@ -55,30 +58,27 @@ function Dashboard() {
     fetchData();
   }, [navigate]);
 
-  // const filteredComplaints = allComplaints.filter((c) => {
-  //   const matchSearch =
-  //     c.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-  //     c.location?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-  //     c.placeName?.toLowerCase().includes(searchTerm.toLowerCase());
-  //   const matchStatus = filterStatus
-  //     ? (c.status || '').toLowerCase() === filterStatus.toLowerCase()
-  //     : true;
-  //   return matchSearch && matchStatus;
-  // });
-
+  // FIX: Combo filter — both searchTerm and filterStatus are applied together.
+  // matchSearch: if searchTerm is empty every complaint passes; otherwise
+  //   any of title / location / placeName must contain the term (case-insensitive).
+  // matchStatus: if no status is selected every complaint passes; otherwise
+  //   the complaint's status must match the selected value after normalisation
+  //   (spaces → hyphens, lowercase) so "in progress" == "in-progress".
   const filteredComplaints = allComplaints.filter((c) => {
+    // Search filter: checks title, location, and placeName fields
     const matchSearch =
       !searchTerm ||
       [c.title, c.location, c.placeName]
         .filter(Boolean)
         .some((field) => field.toLowerCase().includes(searchTerm.toLowerCase()));
-      // c.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      // c.location?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      // c.placeName?.toLowerCase().includes(searchTerm.toLowerCase());
+
+    // Status filter: normalise both values before comparing
     const normalize = (str) =>
-      (str || "").toLowerCase().replace(/\s+/g, "-").trim();
+      (str || '').toLowerCase().replace(/\s+/g, '-').trim();
     const matchStatus =
       !filterStatus || normalize(c.status) === normalize(filterStatus);
+
+    // Both conditions must be satisfied (combo filtering)
     return matchSearch && matchStatus;
   });
 
