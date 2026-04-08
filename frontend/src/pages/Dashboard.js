@@ -21,7 +21,7 @@ function Dashboard() {
   const [userComplaints, setUserComplaints] = useState([]);
   const [allComplaints, setAllComplaints] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
-  const [filterStatus, setFilterStatus] = useState('');
+  const [filterStatus, setFilterStatus] = useState();
 
   const navigate = useNavigate();
 
@@ -55,14 +55,30 @@ function Dashboard() {
     fetchData();
   }, [navigate]);
 
+  // const filteredComplaints = allComplaints.filter((c) => {
+  //   const matchSearch =
+  //     c.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+  //     c.location?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+  //     c.placeName?.toLowerCase().includes(searchTerm.toLowerCase());
+  //   const matchStatus = filterStatus
+  //     ? (c.status || '').toLowerCase() === filterStatus.toLowerCase()
+  //     : true;
+  //   return matchSearch && matchStatus;
+  // });
+
   const filteredComplaints = allComplaints.filter((c) => {
     const matchSearch =
-      c.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      c.location?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      c.placeName?.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchStatus = filterStatus
-      ? (c.status || '').toLowerCase() === filterStatus.toLowerCase()
-      : true;
+      !searchTerm ||
+      [c.title, c.location, c.placeName]
+        .filter(Boolean)
+        .some((field) => field.toLowerCase().includes(searchTerm.toLowerCase()));
+      // c.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      // c.location?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      // c.placeName?.toLowerCase().includes(searchTerm.toLowerCase());
+    const normalize = (str) =>
+      (str || "").toLowerCase().replace(/\s+/g, "-").trim();
+    const matchStatus =
+      !filterStatus || normalize(c.status) === normalize(filterStatus);
     return matchSearch && matchStatus;
   });
 

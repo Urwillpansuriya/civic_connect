@@ -121,23 +121,23 @@ function AdminDashboard() {
     <div style={s.root}>
       {/* Sidebar */}
       <aside style={s.sidebar}>
-        <div style={s.sidebarLogo}>
+      <div style={s.sidebarLogo}>
           <span style={{ fontSize: '22px' }}>🏛️</span>
           <span style={s.sidebarLogoText}>CivicConnect</span>
         </div>
-        <div style={s.sidebarBadge}>ADMIN</div>
-        <nav style={s.nav}>
-          <button style={{ ...s.navBtn, ...s.navBtnActive }}>
+      <div style={s.sidebarBadge}>ADMIN</div>
+      <nav style={s.nav}>
+      <button style={{ ...s.navBtn, ...s.navBtnActive }}>
             <span>📊</span> Dashboard
           </button>
-          <button style={s.navBtn} onClick={() => navigate('/admin/complaints')}>
+      {/* <button style={s.navBtn} onClick={() => navigate('/admin/complaints')}>
             <span>📋</span> Complaints
-          </button>
-          <button style={s.navBtn} onClick={() => navigate('/')}>
+          </button> */}
+      {/* <button style={s.navBtn} onClick={() => navigate('/')}>
             <span>🌐</span> Public View
-          </button>
-        </nav>
-        <div style={s.sidebarFooter}>
+          </button> */}
+      </nav>
+      <div style={s.sidebarFooter}>
           <button
             onClick={() => { localStorage.clear(); navigate('/admin-login'); }}
             style={s.logoutBtn}
@@ -160,34 +160,46 @@ function AdminDashboard() {
 
         {/* Summary Cards */}
         <div style={s.statsRow}>
-          <div style={{ ...s.statCard, borderTop: '4px solid #4f46e5' }}>
+          <div style={{ ...s.statCard, borderTop: "4px solid #4f46e5" }}>
             <div style={s.statIcon}>👥</div>
-            <div style={{ ...s.statValue, color: '#4f46e5' }}>{summary?.totalUsers || 0}</div>
+            <div style={{ ...s.statValue, color: "#4f46e5" }}>
+              {summary?.totalUsers || 0}
+            </div>
             <div style={s.statLabel}>Total Users</div>
           </div>
-          <div style={{ ...s.statCard, borderTop: '4px solid #06b6d4' }}>
+          <div style={{ ...s.statCard, borderTop: "4px solid #06b6d4" }}>
             <div style={s.statIcon}>📋</div>
-            <div style={{ ...s.statValue, color: '#06b6d4' }}>{totalComplaintsCount}</div>
+            <div style={{ ...s.statValue, color: "#06b6d4" }}>
+              {totalComplaintsCount}
+            </div>
             <div style={s.statLabel}>Total Complaints</div>
           </div>
-          <div style={{ ...s.statCard, borderTop: '4px solid #f59e0b' }}>
+          <div style={{ ...s.statCard, borderTop: "4px solid #f59e0b" }}>
             <div style={s.statIcon}>⏳</div>
-            <div style={{ ...s.statValue, color: '#f59e0b' }}>{summary?.statusCounts?.pending || 0}</div>
+            <div style={{ ...s.statValue, color: "#f59e0b" }}>
+              {summary?.statusCounts?.pending || 0}
+            </div>
             <div style={s.statLabel}>Pending</div>
           </div>
-          <div style={{ ...s.statCard, borderTop: '4px solid #10b981' }}>
+          <div style={{ ...s.statCard, borderTop: "4px solid #10b981" }}>
             <div style={s.statIcon}>✅</div>
-            <div style={{ ...s.statValue, color: '#10b981' }}>{summary?.statusCounts?.resolved || 0}</div>
+            <div style={{ ...s.statValue, color: "#10b981" }}>
+              {summary?.statusCounts?.resolved || 0}
+            </div>
             <div style={s.statLabel}>Resolved</div>
           </div>
-          <div style={{ ...s.statCard, borderTop: '4px solid #3b82f6' }}>
+          <div style={{ ...s.statCard, borderTop: "4px solid #3b82f6" }}>
             <div style={s.statIcon}>🔄</div>
-            <div style={{ ...s.statValue, color: '#3b82f6' }}>{summary?.statusCounts?.['in-progress'] || 0}</div>
+            <div style={{ ...s.statValue, color: "#3b82f6" }}>
+              {summary?.statusCounts?.["in-progress"] || 0}
+            </div>
             <div style={s.statLabel}>In Progress</div>
           </div>
-          <div style={{ ...s.statCard, borderTop: '4px solid #ef4444' }}>
+          <div style={{ ...s.statCard, borderTop: "4px solid #ef4444" }}>
             <div style={s.statIcon}>❌</div>
-            <div style={{ ...s.statValue, color: '#ef4444' }}>{summary?.statusCounts?.rejected || 0}</div>
+            <div style={{ ...s.statValue, color: "#ef4444" }}>
+              {summary?.statusCounts?.rejected || 0}
+            </div>
             <div style={s.statLabel}>Rejected</div>
           </div>
         </div>
@@ -221,17 +233,22 @@ function AdminDashboard() {
                 <th style={s.th}>Location</th>
                 <th style={s.th}>Date</th>
                 <th style={s.th}>💬</th>
-                <th style={s.th}>👍</th>
+                {/* <th style={s.th}>👍</th> */}
                 <th style={s.th}>Actions</th>
               </tr>
             </thead>
             <tbody>
-              {filteredComplaints.map(c => (
+              {filteredComplaints.map((c) => (
                 <React.Fragment key={c._id}>
                   <tr style={s.tr}>
                     <td style={s.td}>
                       <span
-                        style={{ fontWeight: '600', color: '#4f46e5', cursor: 'pointer', textDecoration: 'underline' }}
+                        style={{
+                          fontWeight: "600",
+                          color: "#4f46e5",
+                          cursor: "pointer",
+                          textDecoration: "underline",
+                        }}
                         onClick={() => navigate(`/admin/complaints/${c._id}`)}
                         title="View complaint details"
                       >
@@ -240,9 +257,13 @@ function AdminDashboard() {
                     </td>
                     <td style={s.td}>{c.category}</td>
                     <td style={s.td}>{statusPill(c.status)}</td>
-                    <td style={s.td}>{c.user?.name || c.createdBy?.name || 'Unknown'}</td>
-                    <td style={s.td}>{c.placeName || c.location || '—'}</td>
-                    <td style={s.td}>{new Date(c.createdAt).toLocaleDateString()}</td>
+                    <td style={s.td}>
+                      {c.user?.name || c.createdBy?.name || "Unknown"}
+                    </td>
+                    <td style={s.td}>{c.placeName || c.location || "—"}</td>
+                    <td style={s.td}>
+                      {new Date(c.createdAt).toLocaleDateString()}
+                    </td>
                     <td style={s.td}>
                       <button
                         onClick={() => toggleComments(c._id)}
@@ -253,7 +274,13 @@ function AdminDashboard() {
                     </td>
                     <td style={s.td}>{c.likeCount || 0}</td>
                     <td style={s.td}>
-                      <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
+                      <div
+                        style={{
+                          display: "flex",
+                          gap: "6px",
+                          flexWrap: "wrap",
+                        }}
+                      >
                         <button
                           onClick={() => navigate(`/admin/complaints/${c._id}`)}
                           style={s.btnBlue}
@@ -271,7 +298,10 @@ function AdminDashboard() {
                   </tr>
                   {selectedComplaintId === c._id && showComments && (
                     <tr>
-                      <td colSpan="9" style={{ ...s.td, backgroundColor: '#f8fafc' }}>
+                      <td
+                        colSpan="9"
+                        style={{ ...s.td, backgroundColor: "#f8fafc" }}
+                      >
                         <CommentSection complaintId={c._id} />
                       </td>
                     </tr>
@@ -292,7 +322,9 @@ function AdminDashboard() {
             >
               ← Previous
             </button>
-            <span style={s.pageInfo}>Page {currentPage} of {totalPages}</span>
+            <span style={s.pageInfo}>
+              Page {currentPage} of {totalPages}
+            </span>
             <button
               onClick={() => handlePageChange(currentPage + 1)}
               disabled={currentPage === totalPages}
